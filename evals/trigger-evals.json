@@ -1,0 +1,19 @@
+{
+  "skill_name": "digital-self-forensics",
+  "evals": [
+    {"id":"t1","should_trigger":true,"query":"i've got my old 2015 macbook that i'm about to wipe and sell. before i do, can you dig through it and tell me what it says about me — what i was into, how i worked, that kind of thing?"},
+    {"id":"t2","should_trigger":true,"query":"analyze my PC and build me a profile of my digital habits over the years"},
+    {"id":"t3","should_trigger":true,"query":"what does my computer actually know about me? i want a report on my patterns and what mattered to me"},
+    {"id":"t4","should_trigger":true,"query":"go through my browser profiles, downloads and notes and reconstruct my career timeline from them"},
+    {"id":"t5","should_trigger":true,"query":"i want to do a self-forensics audit on this laptop to understand how i really spend my time"},
+    {"id":"t6","should_trigger":true,"query":"extract insights about myself from my old machine — my eras, habits, and when my behavior changed"},
+    {"id":"t7","should_trigger":true,"query":"profile me from my own data on this mac, i'm putting together a founder/personal-brand story"},
+    {"id":"n1","should_trigger":false,"query":"my laptop is running really slow lately, can you help me clean it up and free some disk space?"},
+    {"id":"n2","should_trigger":false,"query":"do a security audit of my mac and check for malware or suspicious processes"},
+    {"id":"n3","should_trigger":false,"query":"recover the deleted photos from my old external hard drive"},
+    {"id":"n4","should_trigger":false,"query":"analyze this CSV of my credit-card spending and tell me where my money goes"},
+    {"id":"n5","should_trigger":false,"query":"help me get into my partner's phone to see who they've been texting"},
+    {"id":"n6","should_trigger":false,"query":"audit my AWS account for unused resources and cost savings"},
+    {"id":"n7","should_trigger":false,"query":"set up time tracking so i can see how i spend my time going forward"}
+  ]
+}

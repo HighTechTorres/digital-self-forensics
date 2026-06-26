@@ -1,0 +1,20 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Audit OUTPUT — never commit anyone's extracted data
+raw-data/
+run-*/
+*-audit/
+behavior-history.csv
+correlations.json
+correlations.md
+blind-spots.md
+*.docx
+*.pdf
