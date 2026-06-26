@@ -2,6 +2,10 @@
 .DS_Store
 Thumbs.db
 
+# Stray app session/auth data that must never be published
+.wwebjs_auth/
+.wwebjs_cache/
+
 # Python
 __pycache__/
 *.py[cod]
