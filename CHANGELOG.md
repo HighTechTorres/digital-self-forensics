@@ -1,5 +1,17 @@
 # Changelog — digital-self-forensics
 
+## v3.3
+Story Seeds — the audit's emotional counterpart to the Handoff Pack.
+- **New: Story Seeds (Phase 7.7).** `scripts/story_seeds.py` mines the local extracts for
+  journal-ready *moments* — project origins (first-commit dates), toolkit-jump years, research
+  bursts (download clusters), and turning-point years (era seams). Each seed carries a title, a
+  window, the on-disk **evidence**, and a **prompt**; the skill writes the first-person draft from
+  that evidence (the script never invents prose). Emits `story-seeds.json` + `story-seeds.md`.
+- **Opt-in note detector** (`--include-personal`) quotes the user's own note titles **verbatim**,
+  under the same consent rule as the rest of the personal layer.
+- `docs/story-seeds.md` updated from spec to shipped; interview "deliverables" question and the
+  README now cover both Story Seeds and the Handoff Pack.
+
 ## v3.2
 The audit gains a *forward* use: seed your next machine.
 - **New: the Handoff Pack (Phase 9).** `scripts/build_handoff_pack.py` turns the local extracts

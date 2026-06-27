@@ -1,6 +1,6 @@
 # Design — Story Seeds (journal mining)
 
-*Status: spec / not yet built. Proposed as a new synthesis layer for Phase 7.*
+*Status: v1 shipped (`scripts/story_seeds.py`, Phase 7.7). This doc is the spec + roadmap.*
 
 ## The idea
 

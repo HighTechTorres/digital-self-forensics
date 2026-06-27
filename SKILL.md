@@ -44,7 +44,7 @@ Before touching the disk, ask the user a few questions so the output serves *the
 - **Privacy comfort** — include the sensitive layer (health/money/relationships/beliefs notes), or business/neutral only?
 - **Audience** — just them, or something they'll share? (If shareable, plan to also produce a redacted edition.)
 - **Output format(s)** — which rendered formats do they actually want? Offer **Markdown** (lightweight, editable), **PDF** (portable, shareable), **Word/.docx** (editable, for collaborators); they can pick any combination. Markdown is always kept as the working source regardless; this answer decides which *rendered* docs Phase 8 produces, so the run doesn't dump files they'll never open. **Default if they don't care: Markdown + PDF.** Record the choice and carry it to Phase 8 (`--formats`).
-- **Deliverables** — beyond the narrative report, do they also want the **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant)? Especially relevant if the trigger was "moving to a new computer" or "old laptop." Default: offer it, build on request.
+- **Deliverables** — beyond the narrative report, which extras do they want? The **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant; especially relevant if the trigger was "moving to a new computer" or "old laptop") and/or **Story Seeds** (Phase 7.7 — journal-ready story candidates from their own data). Default: offer both, build on request.
 
 Reflect their answers back in one line and proceed. The purpose shapes the voice of the final report (warm-personal vs. professional-portfolio).
 
@@ -128,6 +128,15 @@ Instruct it to be disagreeable on substance: cite the data line or say nothing; 
 
 Behavioral retention is short (knowledgeC ~2–4 weeks), so a single run captures a sliver and calls it "rhythm." Frame the skill as **run monthly**: each run writes a timestamped `run-YYYYMMDD/` folder (use `--run-id`), and `python3 scripts/diff_runs.py <old_run> <new_run>` reports what changed (new/dropped services, repo/commit growth, new download sources) and **accumulates** app-usage into a growing `behavior-history.csv` the single snapshot can't produce. The first run is the baseline.
 
+## Phase 7.7 — Story Seeds (optional — the moments, not the metrics)
+
+The reports answer "how do I operate?"; Story Seeds answers "what are the moments I'd want to keep?" Mine the same extracts for journal-ready story candidates — the day a project began, the year a toolkit jumped, a research rabbit-hole, a turning-point year.
+
+- Run `python3 scripts/story_seeds.py <extract_dir>` → `story-seeds.json` + `story-seeds.md`. Each seed carries a **title**, a **window**, the on-disk **evidence**, and a **prompt**.
+- The script supplies evidence and prompts only — **it never invents prose.** *You* (the model) write each seed's short first-person **draft** from its structured evidence, in the user's voice: grounded in what the data shows, never dramatized, diagnosed, or sensationalized. Label inference.
+- The note-derived detector is **opt-in** (`--include-personal`) and quotes the user's own note titles **verbatim** — same consent rule and "redacted edition is the default shareable artifact" posture as the rest of the personal layer.
+- See `docs/story-seeds.md` for the design.
+
 ## Phase 8 — Package & export
 
 Make it portable and self-explaining.
@@ -165,9 +174,10 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/diff_runs.py` — longitudinal diff between two runs + accumulating `behavior-history.csv`.
 - `scripts/render_docs.py` — robust Markdown → Word and/or PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf). Takes `--formats pdf,docx` (or `--pdf` / `--docx`) to honor the Phase-1 format choice; Markdown is the always-kept source.
 - `scripts/build_handoff_pack.py` — OS-agnostic; turns the local extracts into a portable `context-pack/` (profile.json, `CLAUDE.md`/`ABOUT-ME.md`, provisioning manifest) to seed a new machine. Personal layer off by default; `--include-personal` to add a private/ section.
+- `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`.
 - `assets/report-template.md` — findings-first report skeleton.
-- `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack (shipped) and Story Seeds (roadmap).
-- `CHANGELOG.md` — version history (currently v3.2).
+- `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack and Story Seeds (both shipped).
+- `CHANGELOG.md` — version history (currently v3.3).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

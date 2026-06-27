@@ -6,13 +6,13 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.2-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.3-15233a.svg)](CHANGELOG.md)
 
 A Claude Code skill that reads the years of browser history, downloads, notes, git history, and
 app-usage already sitting on a machine you own, and reconstructs **who you've been, how you work,
 and what mattered to you** — then turns that into things you can actually use: narrative reports,
 a portable **Handoff Pack** that seeds your next computer (and its AI) with your context, and
-journal-ready **stories** from your own life *(roadmap)*.
+journal-ready **Story Seeds** mined from your own life.
 
 *Maintained by [@HighTechTorres](https://github.com/HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see [SECURITY.md](SECURITY.md).*
 
@@ -58,9 +58,11 @@ machine knows about you.
   operate, grounded in real numbers from *your* disk (not horoscope-speak).
 - 🎒 **A Handoff Pack** — a portable bundle (`profile.json`, a drop-in `CLAUDE.md`/`ABOUT-ME.md`,
   and a re-provisioning checklist) that seeds your next machine and its AI assistant with your
-  context from day one.
-- 📖 **Story Seeds** *(roadmap)* — journal-ready entries: a date, the evidence, a draft in your
-  voice, and a prompt — the moments your disk remembers that you'd want to keep.
+  context from day one. Built by `build_handoff_pack.py`; the personal layer is excluded by
+  default so it's safe to carry between machines.
+- 📖 **Story Seeds** — journal-ready entries: a title, the window, the on-disk evidence, a draft
+  in your voice, and a prompt — the moments your disk remembers that you'd want to keep. Built by
+  `story_seeds.py`; note-derived seeds are opt-in and quoted verbatim.
 
 ## Privacy-first by design
 
@@ -106,6 +108,7 @@ seed your next computer.
 7. **Synthesize** — findings-first report (+ redacted business-only edition)
 7.5 **Adversarial review** — a fresh-context agent challenges the portrait (local only)
 7.6 **Longitudinal** — re-run monthly and diff over time
+7.7 **Story Seeds** *(optional)* — journal-ready story candidates mined from your own data
 8. **Package & export** — one folder, in your chosen formats (Markdown + PDF/Word as selected), with an index
 9. **Handoff Pack** *(optional)* — a portable bundle to seed your next machine and its AI assistant
 
@@ -115,7 +118,7 @@ seed your next computer.
 |---|---|---|
 | **Reports** | you, to read | Findings-first narrative: eras, turning points, a portrait of how you operate |
 | **Handoff Pack** | your next machine | `profile.json` + `CLAUDE.md`/`ABOUT-ME.md` + a re-provisioning checklist ([design](docs/handoff-pack.md)) |
-| **Story Seeds** *(roadmap)* | your journal | Journal-ready story candidates mined from your own data ([design](docs/story-seeds.md)) |
+| **Story Seeds** | your journal | Journal-ready story candidates mined from your own data ([design](docs/story-seeds.md)) |
 
 ## What's in the box
 
@@ -129,7 +132,8 @@ digital-self-forensics/
 │   ├── correlate.py          # OS-agnostic cross-source engine → correlations.json/.md
 │   ├── diff_runs.py          # longitudinal diff + accumulating behavior history
 │   ├── render_docs.py        # Markdown → Word and/or PDF (--formats pdf,docx)
-│   └── build_handoff_pack.py # OS-agnostic → portable context-pack/ for a new machine
+│   ├── build_handoff_pack.py # OS-agnostic → portable context-pack/ for a new machine
+│   └── story_seeds.py        # OS-agnostic → journal-ready story seeds from the extracts
 ├── references/               # macos.md · windows.md · linux.md (artifact maps + queries)
 ├── docs/                     # handoff-pack.md · story-seeds.md (design specs)
 ├── assets/report-template.md
@@ -150,8 +154,7 @@ Native Windows/Linux extractors are on the roadmap; today non-Mac users run the 
 ## Roadmap
 
 - **Native Windows/Linux extractors** — biggest reach unlock (mirroring `macos_extract.py`).
-- **Story Seeds** — journal mining ([spec](docs/story-seeds.md)).
-- **Richer sources** — photo EXIF (a life-map), calendar/email metadata, media & reading history — all opt-in.
+- **Richer sources** — photo EXIF (a life-map), calendar/email metadata, media & reading history — all opt-in (these also deepen Story Seeds).
 - **Handoff Pack v2** — dotfile capture, a review-before-run `setup.sh` generator, preference inference, an encryption option.
 - **Ask-your-own-data** — a local Q&A mode over the extracts.
 
