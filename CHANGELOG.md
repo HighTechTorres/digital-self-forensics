@@ -1,5 +1,15 @@
 # Changelog — digital-self-forensics
 
+## v3.6.1
+Privacy hardening (from code review).
+- **Photo EXIF sync-root guard is now case-insensitive + segment-based.** `under_sync_root` in
+  `photo_exif.py` used case-sensitive substring matching, so on case-insensitive filesystems a
+  synced output path with different casing (e.g. `C:\Users\me\onedrive\out`) could slip past and
+  let `--include-location` write GPS under a synced root. It now matches lowercased path *segments*
+  across both separators and catches provider-prefixed enterprise folders (`OneDrive - Contoso`)
+  without false-matching `OneDriveBackup` — the same robust matcher used by `build_handoff_pack.py`.
+  The sync-root list is also broadened (Box Sync, Nextcloud, ownCloud, iCloudDrive, …).
+
 ## v3.6
 The signature artifact — **Strata**, an interactive data portrait.
 - **New: `scripts/strata.py` (Phase 8.5)** — renders the extracts into **Strata**, a single,
