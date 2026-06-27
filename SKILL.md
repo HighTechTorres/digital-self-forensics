@@ -30,7 +30,7 @@ Run these phases in order, showing results and checking in between. Don't dump e
 5. **Deep-artifact extraction** — behavior, download provenance, notes, accounts, dev/infra.
 6. **Super-timeline** — merge every dated event into one chronology; find inflection points.
 7. **Synthesis** — write the report(s), including (if permitted) the personal layer.
-8. **Package & export** — one folder, every doc as Markdown + Word + PDF, with an index.
+8. **Package & export** — one folder, every doc in the formats the user chose (Markdown always kept; PDF/Word as selected), with an index.
 
 ---
 
@@ -42,6 +42,7 @@ Before touching the disk, ask the user a few questions so the output serves *the
 - **Depth** — surface (browser/era level) or deep (behavioral + personal notes)?
 - **Privacy comfort** — include the sensitive layer (health/money/relationships/beliefs notes), or business/neutral only?
 - **Audience** — just them, or something they'll share? (If shareable, plan to also produce a redacted edition.)
+- **Output format(s)** — which rendered formats do they actually want? Offer **Markdown** (lightweight, editable), **PDF** (portable, shareable), **Word/.docx** (editable, for collaborators); they can pick any combination. Markdown is always kept as the working source regardless; this answer decides which *rendered* docs Phase 8 produces, so the run doesn't dump files they'll never open. **Default if they don't care: Markdown + PDF.** Record the choice and carry it to Phase 8 (`--formats`).
 
 Reflect their answers back in one line and proceed. The purpose shapes the voice of the final report (warm-personal vs. professional-portfolio).
 
@@ -130,7 +131,7 @@ Behavioral retention is short (knowledgeC ~2–4 weeks), so a single run capture
 Make it portable and self-explaining.
 
 - Create a folder in the user's Downloads named for the audit.
-- Convert every document to **Word + PDF** with `python3 scripts/render_docs.py <folder_or_file>` (it auto-detects available tools: pandoc → textutil → LibreOffice for docx; headless Chrome/Chromium → pandoc → wkhtmltopdf for PDF).
+- Render **only the formats the user chose in Phase 1** with `python3 scripts/render_docs.py <folder_or_file> --formats <pdf,docx>` (it auto-detects available tools: pandoc → textutil → LibreOffice for docx; headless Chrome/Chromium → pandoc → wkhtmltopdf for PDF). The Markdown source is always kept; `--formats` controls the rendered docs. **If the user picked Markdown only, skip this step entirely** — don't render anything. Default when no preference was captured: `--formats pdf` (Markdown + PDF).
 - Copy all docs + a `raw-data/` folder of source extracts in.
 - Write a top-level `README` + `00-OVERVIEW` index, and a one-line privacy note about which files are sensitive.
 
@@ -151,9 +152,9 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/macos_extract.py` — macOS deep extractor (v2): consent flags (`--include-personal` off by default, `--dry-run`, `--source`), layers behavior/provenance/accounts/dev/installs/shell/spotlight/agents/notes → CSV/MD. Run with `-h` for the full contract.
 - `scripts/correlate.py` — OS-agnostic cross-source engine → `correlations.json` + `.md` (crossover, era seams, adoption leaps, opt-in intentions).
 - `scripts/diff_runs.py` — longitudinal diff between two runs + accumulating `behavior-history.csv`.
-- `scripts/render_docs.py` — robust Markdown → Word + PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf).
+- `scripts/render_docs.py` — robust Markdown → Word and/or PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf). Takes `--formats pdf,docx` (or `--pdf` / `--docx`) to honor the Phase-1 format choice; Markdown is the always-kept source.
 - `assets/report-template.md` — findings-first report skeleton.
-- `CHANGELOG.md` — version history (currently v3.0).
+- `CHANGELOG.md` — version history (currently v3.1).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

@@ -1,5 +1,19 @@
 # Changelog — digital-self-forensics
 
+## v3.1
+Output-format control (less file clutter, same audit).
+- **New Phase-1 interview question: output format(s).** The user picks any combination of
+  **Markdown / PDF / Word (.docx)** up front, so a run only emits the rendered docs they'll
+  actually open instead of every format for every edition. Default when unspecified is
+  **Markdown + PDF**.
+- **`render_docs.py` gains `--formats pdf,docx`** (and `--pdf` / `--docx` shortcuts). Markdown
+  stays the always-kept working source; the flag only governs which *rendered* formats are
+  produced. Default with no flag remains both (back-compatible). A `md`/`markdown` value in
+  `--formats` is accepted and ignored (it's the source, not a render target).
+- **Phase 8** now renders only the chosen formats, and **skips rendering entirely** when the
+  user picked Markdown only.
+- No change to extraction, correlation, or the safety posture.
+
 ## v3.0
 Attribution + accountability release (no behavioral change to the audit itself).
 - Added **`SECURITY.md`** — an explicit, verifiable statement of the security posture: no

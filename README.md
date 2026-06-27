@@ -37,13 +37,13 @@ cp -R digital-self-forensics ~/.claude/skills/
 ```
 Audit my computer and tell me what it says about how I work and what mattered to me.
 ```
-The skill triggers, interviews you (purpose, depth, privacy comfort), assesses the machine, requests any needed permissions, runs the audit, and drops the report in your Downloads as Markdown + Word + PDF.
+The skill triggers, interviews you (purpose, depth, privacy comfort, **and which output formats you want**), assesses the machine, requests any needed permissions, runs the audit, and drops the report in your Downloads in the formats you chose (Markdown always kept; PDF and/or Word as selected) — so you don't get a pile of files you'll never open.
 
 ---
 
 ## The flow (8 phases + v2 additions)
 
-1. **Interview** — purpose, depth, privacy comfort
+1. **Interview** — purpose, depth, privacy comfort, output format(s)
 2. **Assess** — detect OS, snapshot the machine, inventory data sources
 3. **Permissions** — walk you through Full Disk Access (macOS) / elevation notes (Win/Linux)
 4. **Persona census** — map browser profiles to life/work eras → per-era deep dives
@@ -53,7 +53,7 @@ The skill triggers, interviews you (purpose, depth, privacy comfort), assesses t
 7. **Synthesize** — findings-first report (+ redacted business-only edition)
 7.5 **Adversarial review** — a fresh-context agent challenges the portrait (local only)
 7.6 **Longitudinal** — re-run monthly and diff over time
-8. **Package & export** — one folder, Markdown + Word + PDF, with an index
+8. **Package & export** — one folder, in your chosen formats (Markdown + PDF/Word as selected), with an index
 
 ## What's in the box
 
