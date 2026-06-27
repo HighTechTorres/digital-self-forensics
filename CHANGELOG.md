@@ -1,5 +1,65 @@
 # Changelog — digital-self-forensics
 
+## v3.4
+Native Windows + Linux extractors — deep extraction is no longer Mac-only.
+- **New: `scripts/linux_extract.py`** — layers behavior (`last` session rhythm), provenance
+  (Chrome/Firefox history + `recently-used.xbel`), accounts (Chrome Login Data + Firefox
+  logins.json), dev (git), installs (dpkg/rpm/pacman/flatpak/snap with dates), shell, recent,
+  autostart. No inner layer (no notes equivalent on Linux).
+- **New: `scripts/windows_extract.py`** (pure Python + stdlib `winreg`) — layers behavior
+  (UserAssist, the knowledgeC analog with focus time), provenance (NTFS `Zone.Identifier` ADS),
+  accounts, dev (git), installs (registry Uninstall + InstallDate), shell (PSReadLine), recent,
+  autostart (Startup + Run keys), and an **opt-in Sticky Notes inner layer**.
+- **Identical contract + output schema** to `macos_extract.py`, so correlate / Story Seeds /
+  Handoff Pack / export all work unchanged on every OS. Registry/live-only layers auto-skip under
+  `--source` (old-drive mode).
+- **Cross-platform inner layer:** downstream tools now recognize both `Apple-Notes-Full-Export.md`
+  (macOS) and `notes-export.md` (Windows Sticky Notes).
+- Same safety posture: local-only, read-only, consent off by default, cloud-sync guard on the
+  inner layer.
+
+## v3.3
+Story Seeds — the audit's emotional counterpart to the Handoff Pack.
+- **New: Story Seeds (Phase 7.7).** `scripts/story_seeds.py` mines the local extracts for
+  journal-ready *moments* — project origins (first-commit dates), toolkit-jump years, research
+  bursts (download clusters), and turning-point years (era seams). Each seed carries a title, a
+  window, the on-disk **evidence**, and a **prompt**; the skill writes the first-person draft from
+  that evidence (the script never invents prose). Emits `story-seeds.json` + `story-seeds.md`.
+- **Opt-in note detector** (`--include-personal`) quotes the user's own note titles **verbatim**,
+  under the same consent rule as the rest of the personal layer.
+- `docs/story-seeds.md` updated from spec to shipped; interview "deliverables" question and the
+  README now cover both Story Seeds and the Handoff Pack.
+
+## v3.2
+The audit gains a *forward* use: seed your next machine.
+- **New: the Handoff Pack (Phase 9).** `scripts/build_handoff_pack.py` turns the local extracts
+  into a portable `context-pack/` — `profile.json` (structured source of truth), `PROFILE.md`, a
+  drop-in **`CLAUDE.md`** for Claude Code on the new machine, a provider-neutral **`ABOUT-ME.md`**,
+  a **`provisioning.md`** re-provisioning checklist, and a seed `README.md`. OS-agnostic (reads the
+  same extracts `correlate.py` does). The personal layer is left OUT by default so the pack is safe
+  to move; `--include-personal` adds a marked `private/` section and refuses cloud-sync roots.
+- **Interview** now asks which deliverables the user wants (report and/or Handoff Pack).
+- **Docs:** added `docs/handoff-pack.md` (shipped) and `docs/story-seeds.md` (roadmap — journal
+  mining). README reframed around the fuller vision: mirror → handoff → stories.
+- **Repo health:** added `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue/PR templates, and a
+  synthetic `examples/sample-report.md`.
+- No change to the safety posture: still local-only, read-only, consent-off-by-default, zero
+  personal data shipped.
+
+## v3.1
+Output-format control (less file clutter, same audit).
+- **New Phase-1 interview question: output format(s).** The user picks any combination of
+  **Markdown / PDF / Word (.docx)** up front, so a run only emits the rendered docs they'll
+  actually open instead of every format for every edition. Default when unspecified is
+  **Markdown + PDF**.
+- **`render_docs.py` gains `--formats pdf,docx`** (and `--pdf` / `--docx` shortcuts). Markdown
+  stays the always-kept working source; the flag only governs which *rendered* formats are
+  produced. Default with no flag remains both (back-compatible). A `md`/`markdown` value in
+  `--formats` is accepted and ignored (it's the source, not a render target).
+- **Phase 8** now renders only the chosen formats, and **skips rendering entirely** when the
+  user picked Markdown only.
+- No change to extraction, correlation, or the safety posture.
+
 ## v3.0
 Attribution + accountability release (no behavioral change to the audit itself).
 - Added **`SECURITY.md`** — an explicit, verifiable statement of the security posture: no

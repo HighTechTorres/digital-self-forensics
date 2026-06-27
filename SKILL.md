@@ -30,7 +30,8 @@ Run these phases in order, showing results and checking in between. Don't dump e
 5. **Deep-artifact extraction** — behavior, download provenance, notes, accounts, dev/infra.
 6. **Super-timeline** — merge every dated event into one chronology; find inflection points.
 7. **Synthesis** — write the report(s), including (if permitted) the personal layer.
-8. **Package & export** — one folder, every doc as Markdown + Word + PDF, with an index.
+8. **Package & export** — one folder, every doc in the formats the user chose (Markdown always kept; PDF/Word as selected), with an index.
+9. **Handoff Pack (optional)** — a portable bundle that seeds the user's *next* machine (and its AI assistant) with who they are and how they work.
 
 ---
 
@@ -42,6 +43,8 @@ Before touching the disk, ask the user a few questions so the output serves *the
 - **Depth** — surface (browser/era level) or deep (behavioral + personal notes)?
 - **Privacy comfort** — include the sensitive layer (health/money/relationships/beliefs notes), or business/neutral only?
 - **Audience** — just them, or something they'll share? (If shareable, plan to also produce a redacted edition.)
+- **Output format(s)** — which rendered formats do they actually want? Offer **Markdown** (lightweight, editable), **PDF** (portable, shareable), **Word/.docx** (editable, for collaborators); they can pick any combination. Markdown is always kept as the working source regardless; this answer decides which *rendered* docs Phase 8 produces, so the run doesn't dump files they'll never open. **Default if they don't care: Markdown + PDF.** Record the choice and carry it to Phase 8 (`--formats`).
+- **Deliverables** — beyond the narrative report, which extras do they want? The **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant; especially relevant if the trigger was "moving to a new computer" or "old laptop") and/or **Story Seeds** (Phase 7.7 — journal-ready story candidates from their own data). Default: offer both, build on request.
 
 Reflect their answers back in one line and proceed. The purpose shapes the voice of the final report (warm-personal vs. professional-portfolio).
 
@@ -76,12 +79,18 @@ Map the user's identities and eras from their browser profiles (the highest-sign
 
 ## Phase 5 — Deep-artifact extraction (the layers bookmarks can't show)
 
-Use the bundled extractor and the OS reference. On macOS, `scripts/macos_extract.py` pulls it all. **The inner layer is OFF by default in code** — Notes bodies are written only with `--include-personal`, honoring the Phase-1 consent answer mechanically, not just in prose.
+Use the **native extractor for the detected OS** — all three share the same CLI contract, the same output-file schema, and the same consent model, so every downstream step (Phase 6.5 correlate, 7.7 Story Seeds, 9 Handoff Pack, export) works identically regardless of platform:
 
-- **First pass:** `python3 scripts/macos_extract.py <out> --dry-run` — prints the inventory + exactly what each layer would extract, writing nothing. Show this to the user.
-- **Standard run (no inner layer):** `python3 scripts/macos_extract.py <out>` → behavior, provenance, accounts, dev/infra, plus **installs** (tool-adoption chronology), **shell** (terminal tool frequency), **spotlight** (most-used docs), **agents** (LaunchAgents). The consent banner states what's on.
-- **Only if the user opted into the inner layer:** add `--include-personal`. The script refuses to write the inner layer under a cloud-sync root.
-- **Old drive / backup (cross-machine):** add `--source /Volumes/Old/Users/<name>` to read a ghost machine instead of `~` (experimental).
+- **macOS** → `scripts/macos_extract.py` (inner layer = Apple Notes)
+- **Linux** → `scripts/linux_extract.py` (no inner layer — no notes equivalent)
+- **Windows** → `python scripts/windows_extract.py` (inner layer = Sticky Notes; UserAssist is the knowledgeC analog)
+
+**The inner layer is OFF by default in code** — note bodies are written only with `--include-personal`, honoring the Phase-1 consent answer mechanically, not just in prose.
+
+- **First pass:** run the extractor with `--dry-run` — prints the inventory + exactly what each layer would extract, writing nothing. Show this to the user.
+- **Standard run (no inner layer):** run it with just `<out>` → behavior, provenance, accounts, dev/infra, installs (tool-adoption chronology), shell (terminal tool frequency), plus OS-specific extras (macOS: spotlight + agents; Linux: recent + autostart; Windows: recent + autostart). The consent banner states what's on.
+- **Only if the user opted into the inner layer:** add `--include-personal` (macOS/Windows). The script refuses to write the inner layer under a cloud-sync root.
+- **Old drive / backup (cross-machine):** add `--source <path>` (e.g. `/Volumes/Old/Users/<name>`, `/mnt/old/home/<name>`, or `D:\Users\<name>`) to read a ghost machine instead of the live home (experimental). Registry/live-only layers are skipped automatically under `--source`.
 
 What each layer yields: behavior (daily rhythm), provenance (consume→create signal), accounts (SaaS footprint, domains only — never passwords), dev/infra (git timeline, server fleet, automations), installs+shell (substrate-leap dates), notes (the inner layer, opt-in).
 
@@ -125,14 +134,32 @@ Instruct it to be disagreeable on substance: cite the data line or say nothing; 
 
 Behavioral retention is short (knowledgeC ~2–4 weeks), so a single run captures a sliver and calls it "rhythm." Frame the skill as **run monthly**: each run writes a timestamped `run-YYYYMMDD/` folder (use `--run-id`), and `python3 scripts/diff_runs.py <old_run> <new_run>` reports what changed (new/dropped services, repo/commit growth, new download sources) and **accumulates** app-usage into a growing `behavior-history.csv` the single snapshot can't produce. The first run is the baseline.
 
+## Phase 7.7 — Story Seeds (optional — the moments, not the metrics)
+
+The reports answer "how do I operate?"; Story Seeds answers "what are the moments I'd want to keep?" Mine the same extracts for journal-ready story candidates — the day a project began, the year a toolkit jumped, a research rabbit-hole, a turning-point year.
+
+- Run `python3 scripts/story_seeds.py <extract_dir>` → `story-seeds.json` + `story-seeds.md`. Each seed carries a **title**, a **window**, the on-disk **evidence**, and a **prompt**.
+- The script supplies evidence and prompts only — **it never invents prose.** *You* (the model) write each seed's short first-person **draft** from its structured evidence, in the user's voice: grounded in what the data shows, never dramatized, diagnosed, or sensationalized. Label inference.
+- The note-derived detector is **opt-in** (`--include-personal`) and quotes the user's own note titles **verbatim** — same consent rule and "redacted edition is the default shareable artifact" posture as the rest of the personal layer.
+- See `docs/story-seeds.md` for the design.
+
 ## Phase 8 — Package & export
 
 Make it portable and self-explaining.
 
 - Create a folder in the user's Downloads named for the audit.
-- Convert every document to **Word + PDF** with `python3 scripts/render_docs.py <folder_or_file>` (it auto-detects available tools: pandoc → textutil → LibreOffice for docx; headless Chrome/Chromium → pandoc → wkhtmltopdf for PDF).
+- Render **only the formats the user chose in Phase 1** with `python3 scripts/render_docs.py <folder_or_file> --formats <pdf,docx>` (it auto-detects available tools: pandoc → textutil → LibreOffice for docx; headless Chrome/Chromium → pandoc → wkhtmltopdf for PDF). The Markdown source is always kept; `--formats` controls the rendered docs. **If the user picked Markdown only, skip this step entirely** — don't render anything. Default when no preference was captured: `--formats pdf` (Markdown + PDF).
 - Copy all docs + a `raw-data/` folder of source extracts in.
 - Write a top-level `README` + `00-OVERVIEW` index, and a one-line privacy note about which files are sensitive.
+
+## Phase 9 — The Handoff Pack (optional — seed the next machine)
+
+The reports are written for a human to *read*; the Handoff Pack is written for a machine to *ingest*. When the user is moving to a new computer (or just wants their context portable), turn the extracts into a small bundle that gives a fresh machine — and the AI assistant on it — instant context instead of a cold start.
+
+- Run `python3 scripts/build_handoff_pack.py <extract_dir>` → a `context-pack/` containing `profile.json` (structured source of truth), `PROFILE.md`, a drop-in **`CLAUDE.md`** for Claude Code on the new machine, a provider-neutral **`ABOUT-ME.md`**, a **`provisioning.md`** re-provisioning checklist (brew/apps/CLI/automations/services to re-login), and a seed `README.md`.
+- **Safe to move by default.** The personal/inner layer is left OUT even when it was extracted — a pack you carry between machines is exactly where you don't want sensitive notes embedded. Only add `--include-personal` if the user explicitly asks; it refuses to write under a cloud-sync root.
+- Tell the user how to use it: copy the folder to the new machine via a *local* transfer, drop `CLAUDE.md` where their AI tooling reads memory, and work through `provisioning.md`.
+- See `docs/handoff-pack.md` for the full design. (A companion **Story Seeds** layer — journal-ready story candidates mined from the same extracts — is specced in `docs/story-seeds.md` and on the roadmap.)
 
 ---
 
@@ -149,11 +176,16 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `references/linux.md` — Linux artifacts (shell/python history, `recently-used.xbel`, journald, `~/.config`).
 - `scripts/assess_system.sh` — cross-Unix system snapshot + OS detection + data-source inventory.
 - `scripts/macos_extract.py` — macOS deep extractor (v2): consent flags (`--include-personal` off by default, `--dry-run`, `--source`), layers behavior/provenance/accounts/dev/installs/shell/spotlight/agents/notes → CSV/MD. Run with `-h` for the full contract.
+- `scripts/linux_extract.py` — Linux deep extractor: same contract + output schema, layers behavior(`last`)/provenance(browser+xbel)/accounts/dev/installs(dpkg/rpm/pacman/flatpak/snap)/shell/recent/autostart. No inner layer (no notes equivalent).
+- `scripts/windows_extract.py` — Windows deep extractor (Python + `winreg`): same contract + output schema, layers behavior(UserAssist)/provenance(`Zone.Identifier`)/accounts/dev/installs(registry)/shell(PSReadLine)/recent/autostart/notes(Sticky Notes, opt-in). Registry/live-only layers skip under `--source`.
 - `scripts/correlate.py` — OS-agnostic cross-source engine → `correlations.json` + `.md` (crossover, era seams, adoption leaps, opt-in intentions).
 - `scripts/diff_runs.py` — longitudinal diff between two runs + accumulating `behavior-history.csv`.
-- `scripts/render_docs.py` — robust Markdown → Word + PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf).
+- `scripts/render_docs.py` — robust Markdown → Word and/or PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf). Takes `--formats pdf,docx` (or `--pdf` / `--docx`) to honor the Phase-1 format choice; Markdown is the always-kept source.
+- `scripts/build_handoff_pack.py` — OS-agnostic; turns the local extracts into a portable `context-pack/` (profile.json, `CLAUDE.md`/`ABOUT-ME.md`, provisioning manifest) to seed a new machine. Personal layer off by default; `--include-personal` to add a private/ section.
+- `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`.
 - `assets/report-template.md` — findings-first report skeleton.
-- `CHANGELOG.md` — version history (currently v3.0).
+- `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack and Story Seeds (both shipped).
+- `CHANGELOG.md` — version history (currently v3.4).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

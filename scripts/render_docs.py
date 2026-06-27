@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 """
-render_docs.py — convert Markdown to Word (.docx) and PDF, robustly, on any machine.
+render_docs.py — convert Markdown to Word (.docx) and/or PDF, robustly, on any machine.
 
 Usage:
-    python3 render_docs.py <file.md | folder>     # converts a file or every .md in a folder
+    python3 render_docs.py <file.md | folder> [--formats pdf,docx]
+    python3 render_docs.py <file.md | folder> --pdf            # PDF only
+    python3 render_docs.py <file.md | folder> --docx           # Word only
+
+The Markdown source is always kept as-is; this only controls which RENDERED
+formats are produced alongside it. Default is both docx + pdf (back-compatible).
+Pass --formats to honor the user's Phase-1 choice and avoid emitting files they
+don't want. (Markdown-only runs simply skip this script entirely.)
 
 Strategy (auto-detects what's installed, no hard dependency):
   Markdown -> HTML : python 'markdown' pkg if present, else a minimal built-in converter.
@@ -12,7 +19,7 @@ Strategy (auto-detects what's installed, no hard dependency):
 
 Nothing is uploaded; all conversion is local.
 """
-import os, sys, shutil, subprocess, tempfile, re, glob
+import os, sys, shutil, subprocess, tempfile, re, glob, argparse
 
 CSS = """
 @page{margin:1in;}
@@ -113,23 +120,54 @@ def to_pdf(html_path, out_pdf):
             return "libreoffice"
     return None
 
-def convert(md_file):
+ALL_FORMATS = ("docx", "pdf")
+
+def convert(md_file, formats=ALL_FORMATS):
     base = os.path.splitext(md_file)[0]
     html = md_to_html(open(md_file, encoding="utf-8").read())
     with tempfile.NamedTemporaryFile("w", suffix=".html", delete=False, encoding="utf-8") as f:
         f.write(html); hp=f.name
-    d = to_docx(hp, base+".docx"); p = to_pdf(hp, base+".pdf")
+    results = []
+    if "docx" in formats:
+        results.append(f"docx:{to_docx(hp, base+'.docx') or 'FAILED'}")
+    if "pdf" in formats:
+        results.append(f"pdf:{to_pdf(hp, base+'.pdf') or 'FAILED'}")
     os.unlink(hp)
-    print(f"  {os.path.basename(md_file)}  ->  docx:{d or 'FAILED'}  pdf:{p or 'FAILED'}")
+    print(f"  {os.path.basename(md_file)}  ->  {'  '.join(results) or '(no rendered formats requested)'}")
+
+def parse_formats(args):
+    # --pdf / --docx flags take precedence; else --formats csv; else default both.
+    selected = []
+    if args.docx: selected.append("docx")
+    if args.pdf: selected.append("pdf")
+    if selected:
+        return tuple(selected)
+    if args.formats:
+        wanted = [f.strip().lower() for f in args.formats.split(",") if f.strip()]
+        # 'md'/'markdown' is the source and always kept; ignore it as a render target.
+        out = [f for f in wanted if f in ALL_FORMATS]
+        bad = [f for f in wanted if f not in ALL_FORMATS and f not in ("md", "markdown")]
+        if bad:
+            print(f"Ignoring unknown format(s): {', '.join(bad)} (valid: docx, pdf)")
+        return tuple(out)
+    return ALL_FORMATS
 
 def main():
-    if len(sys.argv)<2:
-        print(__doc__); sys.exit(1)
-    target=sys.argv[1]
+    ap = argparse.ArgumentParser(description="Convert Markdown to .docx and/or .pdf, locally.")
+    ap.add_argument("target", help="A .md file or a folder of .md files")
+    ap.add_argument("--formats", help="Comma list of rendered formats to produce: docx,pdf (md is the source, always kept)")
+    ap.add_argument("--pdf", action="store_true", help="Produce PDF only")
+    ap.add_argument("--docx", action="store_true", help="Produce Word (.docx) only")
+    args = ap.parse_args()
+
+    formats = parse_formats(args)
+    target = args.target
     files = sorted(glob.glob(os.path.join(target,"*.md"))) if os.path.isdir(target) else [target]
     if not files: print("No .md files found."); sys.exit(1)
-    print(f"Rendering {len(files)} file(s):")
-    for f in files: convert(f)
+    if not formats:
+        print("No rendered formats requested (Markdown kept as-is); nothing to convert."); return
+    print(f"Rendering {len(files)} file(s) -> {', '.join(formats)}:")
+    for f in files: convert(f, formats)
 
 if __name__=="__main__":
     main()

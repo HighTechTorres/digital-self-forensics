@@ -31,11 +31,16 @@ def year_of(s):
     y=int(m.group(0))
     return y if 1995<=y<=2035 else None  # clamp out stray/epoch-zero years
 
+# personal/inner-layer export — macOS Notes or Windows Sticky Notes (same downstream shape)
+NOTES_FILES=["Apple-Notes-Full-Export.md","notes-export.md"]
+def notes_path(d):
+    return next((os.path.join(d,f) for f in NOTES_FILES if os.path.exists(os.path.join(d,f))), None)
+
 def main():
     if len(sys.argv)<2: print(__doc__); sys.exit(1)
     d=sys.argv[1]
     findings=[]; era_seams=[]; intention_gaps=[]
-    personal = os.path.exists(os.path.join(d,"Apple-Notes-Full-Export.md"))
+    np=notes_path(d); personal = np is not None
 
     # ---- yearly signals ----
     consume=collections.Counter()  # downloads/yr
@@ -94,7 +99,7 @@ def main():
 
     # ---- intention gaps (personal layer only) ----
     if personal:
-        txt=open(os.path.join(d,"Apple-Notes-Full-Export.md"),encoding="utf-8",errors="ignore").read()
+        txt=open(np,encoding="utf-8",errors="ignore").read()
         # conservative: pull lines that read like stated intentions; never judge fulfillment automatically
         pat=re.compile(r'(?im)^(.*\b(i will|i am going to|my goal|i want to become|launch|declare|become a|by \d{4})\b.*)$')
         seen=set()
