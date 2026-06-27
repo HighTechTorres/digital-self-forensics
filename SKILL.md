@@ -41,7 +41,7 @@ Before touching the disk, ask the user a few questions so the output serves *the
 
 - **Purpose** — what's this for? (self-knowledge · a personal-brand/founder story · a résumé/portfolio · understanding their own habits/productivity · just curiosity)
 - **Depth** — surface (browser/era level) or deep (behavioral + personal notes)?
-- **Privacy comfort** — include the sensitive layer (health/money/relationships/beliefs notes), or business/neutral only?
+- **Privacy comfort** — include the sensitive layers? Two distinct opt-ins: the **inner layer** (notes on health/money/relationships/beliefs) and **photo location** (GPS = a map of where you've been). Both off by default; ask about each, or keep to business/neutral only.
 - **Audience** — just them, or something they'll share? (If shareable, plan to also produce a redacted edition.)
 - **Output format(s)** — which rendered formats do they actually want? Offer **Markdown** (lightweight, editable), **PDF** (portable, shareable), **Word/.docx** (editable, for collaborators); they can pick any combination. Markdown is always kept as the working source regardless; this answer decides which *rendered* docs Phase 8 produces, so the run doesn't dump files they'll never open. **Default if they don't care: Markdown + PDF.** Record the choice and carry it to Phase 8 (`--formats`).
 - **Deliverables** — beyond the narrative report, which extras do they want? The **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant; especially relevant if the trigger was "moving to a new computer" or "old laptop") and/or **Story Seeds** (Phase 7.7 — journal-ready story candidates from their own data). Default: offer both, build on request.
@@ -92,6 +92,8 @@ Use the **native extractor for the detected OS** — all three share the same CL
 - **Only if the user opted into the inner layer:** add `--include-personal` (macOS/Windows). The script refuses to write the inner layer under a cloud-sync root.
 - **Old drive / backup (cross-machine):** add `--source <path>` (e.g. `/Volumes/Old/Users/<name>`, `/mnt/old/home/<name>`, or `D:\Users\<name>`) to read a ghost machine instead of the live home (experimental). Registry/live-only layers are skipped automatically under `--source`.
 
+**Optional photo source (cross-platform, opt-in):** photos are the richest dated record most people own. `python3 scripts/photo_exif.py <out>` reads EXIF locally (pure stdlib; uses Pillow if present) → `photo-exif.csv` + `photo-map.md` (a life-map: photos by year, camera eras, location clusters). **Location is the sensitive part and is OFF by default** — only dates + camera are written unless the user opts in with `--include-location` (which refuses to write coordinates under a cloud-sync root). The photo timeline feeds the super-timeline (Phase 6) and Story Seeds (Phase 7.7, where it becomes trips and memory-bursts). HEIC/RAW need Pillow+pillow-heif; otherwise they're skipped (reported, not silent).
+
 What each layer yields: behavior (daily rhythm), provenance (consume→create signal), accounts (SaaS footprint, domains only — never passwords), dev/infra (git timeline, server fleet, automations), installs+shell (substrate-leap dates), notes (the inner layer, opt-in).
 
 Then tell the user the **non-obvious** findings, not just the data — but the real cross-source synthesis happens in Phase 6.5.
@@ -138,7 +140,7 @@ Behavioral retention is short (knowledgeC ~2–4 weeks), so a single run capture
 
 The reports answer "how do I operate?"; Story Seeds answers "what are the moments I'd want to keep?" Mine the same extracts for journal-ready story candidates — the day a project began, the year a toolkit jumped, a research rabbit-hole, a turning-point year.
 
-- Run `python3 scripts/story_seeds.py <extract_dir>` → `story-seeds.json` + `story-seeds.md`. Each seed carries a **title**, a **window**, the on-disk **evidence**, and a **prompt**.
+- Run `python3 scripts/story_seeds.py <extract_dir>` → `story-seeds.json` + `story-seeds.md`. Each seed carries a **title**, a **window**, the on-disk **evidence**, and a **prompt**. Detectors: project origins, toolkit-jump years, research bursts, turning-point years, and — if `photo-exif.csv` is present — **photo memory-bursts and trips** (trips only when the user extracted location).
 - The script supplies evidence and prompts only — **it never invents prose.** *You* (the model) write each seed's short first-person **draft** from its structured evidence, in the user's voice: grounded in what the data shows, never dramatized, diagnosed, or sensationalized. Label inference.
 - The note-derived detector is **opt-in** (`--include-personal`) and quotes the user's own note titles **verbatim** — same consent rule and "redacted edition is the default shareable artifact" posture as the rest of the personal layer.
 - See `docs/story-seeds.md` for the design.
@@ -182,10 +184,11 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/diff_runs.py` — longitudinal diff between two runs + accumulating `behavior-history.csv`.
 - `scripts/render_docs.py` — robust Markdown → Word and/or PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf). Takes `--formats pdf,docx` (or `--pdf` / `--docx`) to honor the Phase-1 format choice; Markdown is the always-kept source.
 - `scripts/build_handoff_pack.py` — OS-agnostic; turns the local extracts into a portable `context-pack/` (profile.json, `CLAUDE.md`/`ABOUT-ME.md`, provisioning manifest) to seed a new machine. Personal layer off by default; `--include-personal` to add a private/ section.
-- `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`.
+- `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`; photo trips/bursts when `photo-exif.csv` is present.
+- `scripts/photo_exif.py` — cross-platform photo life-map from EXIF (pure stdlib; Pillow fast-path). Dates + camera by default; `--include-location` adds GPS (off by default, cloud-sync-guarded). → `photo-exif.csv` + `photo-map.md`.
 - `assets/report-template.md` — findings-first report skeleton.
 - `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack and Story Seeds (both shipped).
-- `CHANGELOG.md` — version history (currently v3.4.1).
+- `CHANGELOG.md` — version history (currently v3.5).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

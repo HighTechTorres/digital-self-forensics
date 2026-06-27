@@ -1,5 +1,22 @@
 # Changelog — digital-self-forensics
 
+## v3.5
+Photos as a source — the richest dated record most people own.
+- **New: `scripts/photo_exif.py`** — cross-platform photo life-map from EXIF. Emits
+  `photo-exif.csv` (taken/year/month/lat/lon/camera) + `photo-map.md` (photos by year, camera
+  eras, location clusters). **Pure stdlib** built-in JPEG/TIFF EXIF reader (validated on a
+  synthesized EXIF image incl. GPS N/S/E/W sign handling); uses Pillow as a faster, broader-format
+  fast-path if it's installed.
+- **Location is opt-in.** By default only dates + camera are written; `--include-location` adds
+  GPS and refuses to write coordinates under a cloud-sync root.
+- **HEIC/RAW/PNG flow through the Pillow path** when Pillow (+pillow-heif) is installed — they're
+  hard-skipped only when Pillow is unavailable or a file yields no usable EXIF (reported, not
+  silent). The reader in use (built-in vs Pillow) is printed.
+- **Story Seeds gains photo detectors** — memory-burst months and (when location was extracted)
+  trips, surfaced as journal-ready seeds.
+- Interview "privacy comfort" now treats the inner layer and photo location as two distinct
+  opt-ins. Same safety posture: local-only, read-only, consent off by default.
+
 ## v3.4.1
 Security/consent hardening (from code review — no behavioral change to a correctly-used run).
 - **Handoff Pack sync-root guard is now cross-platform.** `under_sync_root` matched Unix paths
