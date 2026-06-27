@@ -185,7 +185,7 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`.
 - `assets/report-template.md` — findings-first report skeleton.
 - `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack and Story Seeds (both shipped).
-- `CHANGELOG.md` — version history (currently v3.4).
+- `CHANGELOG.md` — version history (currently v3.4.1).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

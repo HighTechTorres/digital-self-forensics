@@ -31,12 +31,20 @@ Outputs (in EXTRACT_DIR/context-pack/ unless --out is given):
 """
 import os, sys, csv, json, re, argparse, collections, datetime
 
-SYNC_ROOTS = ["Dropbox", "Mobile Documents", "iCloud", "OneDrive", "Google Drive",
-              "GoogleDrive", "pCloud", "Box Sync"]
+SYNC_ROOTS = ["Dropbox", "Mobile Documents", "iCloud", "iCloudDrive", "OneDrive", "Google Drive",
+              "GoogleDrive", "pCloud", "Box", "Box Sync", "Nextcloud", "ownCloud", "Creative Cloud Files"]
 
 def under_sync_root(path):
-    ap = os.path.abspath(path)
-    return next((s for s in SYNC_ROOTS if f"/{s}" in ap or ap.endswith(s)), None)
+    # Match case-insensitively against BOTH separators so Windows paths like
+    # C:\Users\me\OneDrive\context-pack are caught, not just Unix ones. Also catch
+    # provider-prefixed enterprise folders like "OneDrive - Contoso" (seg starts with "root -").
+    parts = [p.lower() for p in os.path.abspath(path).replace("\\", "/").split("/") if p]
+    roots = [s.lower() for s in SYNC_ROOTS]
+    for seg in parts:
+        for r in roots:
+            if seg == r or seg.startswith(r + " -"):
+                return seg
+    return None
 
 def read_csv(path):
     if not os.path.exists(path): return []

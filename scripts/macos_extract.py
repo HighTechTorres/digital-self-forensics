@@ -218,7 +218,14 @@ def main():
     if not os.path.isdir(R): print(f"ERROR: --source not found: {R}"); sys.exit(3)
 
     chosen = [l.strip() for l in a.layers.split(",") if l.strip()] if a.layers else list(ALL_LAYERS)
-    if a.include_personal: chosen += [l for l in PERSONAL_LAYERS if l not in chosen]
+    if a.include_personal:
+        chosen += [l for l in PERSONAL_LAYERS if l not in chosen]
+    else:
+        # consent gate: personal layers run ONLY with --include-personal, even if named in --layers
+        blocked = [l for l in chosen if l in PERSONAL_LAYERS]
+        if blocked:
+            print(f"note: ignoring personal layer(s) {', '.join(blocked)} — they require --include-personal.")
+        chosen = [l for l in chosen if l not in PERSONAL_LAYERS]
     chosen = [l for l in chosen if l in LAYER_FN]
 
     # consent banner — always printed first, before touching anything
