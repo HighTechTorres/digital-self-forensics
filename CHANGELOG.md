@@ -5,7 +5,9 @@ Security/consent hardening (from code review — no behavioral change to a corre
 - **Handoff Pack sync-root guard is now cross-platform.** `under_sync_root` matched Unix paths
   only, so `--include-personal` could write the private layer under a Windows synced folder
   (e.g. `C:\Users\me\OneDrive\…`). It now matches path segments case-insensitively across both
-  separators, and the sync-root list is broader (Box, Nextcloud, ownCloud, iCloudDrive, …).
+  separators, catches **provider-prefixed enterprise folders** (`OneDrive - Contoso`,
+  incl. the macOS `CloudStorage/OneDrive - Org` layout) without false-matching names like
+  `OneDriveBackup`, and the sync-root list is broader (Box, Nextcloud, ownCloud, iCloudDrive, …).
 - **`--layers notes` no longer bypasses consent.** In the macOS and Windows extractors, naming a
   personal layer via `--layers` ran it even without `--include-personal`. Personal layers are now
   dropped (with a printed note) unless `--include-personal` is set.

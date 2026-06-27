@@ -36,10 +36,15 @@ SYNC_ROOTS = ["Dropbox", "Mobile Documents", "iCloud", "iCloudDrive", "OneDrive"
 
 def under_sync_root(path):
     # Match case-insensitively against BOTH separators so Windows paths like
-    # C:\Users\me\OneDrive\context-pack are caught, not just Unix ones.
+    # C:\Users\me\OneDrive\context-pack are caught, not just Unix ones. Also catch
+    # provider-prefixed enterprise folders like "OneDrive - Contoso" (seg starts with "root -").
     parts = [p.lower() for p in os.path.abspath(path).replace("\\", "/").split("/") if p]
-    roots = {s.lower() for s in SYNC_ROOTS}
-    return next((p for p in parts if p in roots), None)
+    roots = [s.lower() for s in SYNC_ROOTS]
+    for seg in parts:
+        for r in roots:
+            if seg == r or seg.startswith(r + " -"):
+                return seg
+    return None
 
 def read_csv(path):
     if not os.path.exists(path): return []
