@@ -104,6 +104,44 @@ def research_bursts(d):
                             "high" if n >= 20 else "medium"))
     return out[:12]
 
+def photo_moments(d):
+    """From photo-exif.csv (if present): memory-burst months and, when location was extracted, trips.
+    Photo location only appears here if the user already opted into it at extraction time."""
+    rows = read_csv(os.path.join(d, "photo-exif.csv"))
+    if not rows: return []
+    out = []
+    by_month = collections.Counter()
+    geo = collections.defaultdict(list)  # rounded coord -> list of months
+    for r in rows:
+        mo = r.get("month", "")
+        if mo: by_month[mo] += 1
+        lat, lon = r.get("lat", ""), r.get("lon", "")
+        if lat and lon:
+            try: geo[(round(float(lat), 1), round(float(lon), 1))].append(mo)
+            except ValueError: pass
+    # memory bursts — months with unusually many photos
+    if by_month:
+        peak = max(by_month.values())
+        for mo, n in by_month.most_common(8):
+            if n >= max(20, int(peak * 0.6)):
+                out.append(seed("photo-burst", f"A photo-heavy month ({mo})", mo,
+                                {"month": mo, "photos": n},
+                                f"You took {n} photos in {mo}. What was happening that month?",
+                                "high" if n >= peak * 0.8 else "medium"))
+    # trips — a location cluster concentrated in 1–2 months, away from the home cluster
+    if geo:
+        home = max(geo, key=lambda k: len(geo[k]))
+        for coord, months in sorted(geo.items(), key=lambda kv: -len(kv[1])):
+            if coord == home: continue
+            uniq = sorted(set(m for m in months if m))
+            if len(months) >= 8 and len(uniq) <= 2:
+                out.append(seed("photo-trip", f"A trip around {coord[0]}, {coord[1]}", uniq[0] if uniq else "",
+                                {"approx_coord": list(coord), "photos": len(months), "months": uniq},
+                                f"You took {len(months)} photos near {coord[0]}, {coord[1]} "
+                                f"({', '.join(uniq)}). Where was this and what was the trip?",
+                                "medium"))
+    return out[:10]
+
 def era_turning_points(d):
     corr = read_json(os.path.join(d, "correlations.json"))
     out = []
@@ -150,6 +188,7 @@ def main():
 
     seeds = []
     seeds += era_turning_points(d)   # strongest signal first
+    seeds += photo_moments(d)        # trips + memory bursts (if photo-exif.csv present)
     seeds += project_origins(d)
     seeds += adoption_moments(d)
     seeds += research_bursts(d)

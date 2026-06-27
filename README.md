@@ -6,10 +6,10 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.4-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.5-15233a.svg)](CHANGELOG.md)
 
-A Claude Code skill that reads the years of browser history, downloads, notes, git history, and
-app-usage already sitting on a machine you own, and reconstructs **who you've been, how you work,
+A Claude Code skill that reads the years of browser history, downloads, notes, git history,
+app-usage, and photo metadata already sitting on a machine you own, and reconstructs **who you've been, how you work,
 and what mattered to you** — then turns that into things you can actually use: narrative reports,
 a portable **Handoff Pack** that seeds your next computer (and its AI) with your context, and
 journal-ready **Story Seeds** mined from your own life.
@@ -104,7 +104,7 @@ seed your next computer.
 2. **Assess** — detect OS, snapshot the machine, inventory data sources
 3. **Permissions** — walk you through Full Disk Access (macOS) / elevation notes (Win/Linux)
 4. **Persona census** — map browser profiles to life/work eras → per-era deep dives
-5. **Deep extraction** — native per-OS extractor: behavior, downloads, accounts, dev/infra, installs, shell, automations (+ notes/Sticky Notes, opt-in)
+5. **Deep extraction** — native per-OS extractor: behavior, downloads, accounts, dev/infra, installs, shell, automations (+ notes/Sticky Notes, opt-in) · **optional photo EXIF life-map** (dates + camera; GPS opt-in)
 6. **Super-timeline** — merge every dated event into one chronology
 6.5 **Correlate** — the headline: consume→create crossover, era seams, adoption leaps
 7. **Synthesize** — findings-first report (+ redacted business-only edition)
@@ -137,9 +137,10 @@ digital-self-forensics/
 │   ├── diff_runs.py           # longitudinal diff + accumulating behavior history
 │   ├── render_docs.py         # Markdown → Word and/or PDF (--formats pdf,docx)
 │   ├── build_handoff_pack.py  # OS-agnostic → portable context-pack/ for a new machine
-│   └── story_seeds.py         # OS-agnostic → journal-ready story seeds from the extracts
+│   ├── story_seeds.py         # OS-agnostic → journal-ready story seeds from the extracts
+│   └── photo_exif.py          # cross-platform photo life-map from EXIF (GPS opt-in)
 ├── references/                # macos.md · windows.md · linux.md (artifact maps + queries)
-├── docs/                      # handoff-pack.md · story-seeds.md (design specs + roadmap)
+├── docs/                      # handoff-pack.md · story-seeds.md · photo-exif.md (design specs)
 ├── assets/report-template.md  # findings-first report skeleton
 ├── examples/sample-report.md  # synthetic sample of the output (no real data)
 ├── evals/                     # trigger-accuracy benchmark
@@ -163,6 +164,7 @@ platforms.
 | Assess / inventory | ✅ script | 📄 reference | ✅ script |
 | Deep extraction | ✅ `macos_extract.py` | ✅ `windows_extract.py` | ✅ `linux_extract.py` |
 | Inner (personal) layer | ✅ Apple Notes | ✅ Sticky Notes | — (no notes equivalent) |
+| Photo EXIF life-map | ✅ | ✅ | ✅ (pure stdlib; GPS opt-in) |
 | Correlate / report / Story Seeds / Handoff Pack | ✅ | ✅ | ✅ (OS-agnostic) |
 
 **All three platforms now have native deep extractors** that share one CLI contract and output
@@ -171,7 +173,8 @@ the underlying artifacts and any commands that need an elevated prompt.
 
 ## Roadmap
 
-- **Richer sources** — photo EXIF (a life-map), calendar/email metadata, media & reading history — all opt-in (these also deepen Story Seeds).
+- **More sources** — calendar/email metadata, media & reading history — all opt-in (these also deepen Story Seeds). *(Photo EXIF life-map shipped in v3.5.)*
+- **Photo v2** — HEIC/RAW support out of the box, and optional offline reverse-geocoding so location clusters become place names.
 - **Handoff Pack v2** — dotfile capture, a review-before-run `setup.sh` generator, preference inference, an encryption option.
 - **Deeper Windows behavior** — `ActivitiesCache.db` and Prefetch (elevated) alongside UserAssist.
 - **Ask-your-own-data** — a local Q&A mode over the extracts.
