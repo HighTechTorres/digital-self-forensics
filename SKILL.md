@@ -31,6 +31,7 @@ Run these phases in order, showing results and checking in between. Don't dump e
 6. **Super-timeline** — merge every dated event into one chronology; find inflection points.
 7. **Synthesis** — write the report(s), including (if permitted) the personal layer.
 8. **Package & export** — one folder, every doc in the formats the user chose (Markdown always kept; PDF/Word as selected), with an index.
+8.5. **Strata (optional)** — a single interactive, offline HTML page that renders the whole audit as a designed data portrait.
 9. **Handoff Pack (optional)** — a portable bundle that seeds the user's *next* machine (and its AI assistant) with who they are and how they work.
 
 ---
@@ -44,7 +45,7 @@ Before touching the disk, ask the user a few questions so the output serves *the
 - **Privacy comfort** — include the sensitive layers? Two distinct opt-ins: the **inner layer** (notes on health/money/relationships/beliefs) and **photo location** (GPS = a map of where you've been). Both off by default; ask about each, or keep to business/neutral only.
 - **Audience** — just them, or something they'll share? (If shareable, plan to also produce a redacted edition.)
 - **Output format(s)** — which rendered formats do they actually want? Offer **Markdown** (lightweight, editable), **PDF** (portable, shareable), **Word/.docx** (editable, for collaborators); they can pick any combination. Markdown is always kept as the working source regardless; this answer decides which *rendered* docs Phase 8 produces, so the run doesn't dump files they'll never open. **Default if they don't care: Markdown + PDF.** Record the choice and carry it to Phase 8 (`--formats`).
-- **Deliverables** — beyond the narrative report, which extras do they want? The **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant; especially relevant if the trigger was "moving to a new computer" or "old laptop") and/or **Story Seeds** (Phase 7.7 — journal-ready story candidates from their own data). Default: offer both, build on request.
+- **Deliverables** — beyond the narrative report, which extras do they want? **Strata** (Phase 8.5 — a designed, interactive, offline HTML data portrait of the whole audit), the **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant; especially relevant if the trigger was "moving to a new computer" or "old laptop"), and/or **Story Seeds** (Phase 7.7 — journal-ready story candidates from their own data). Default: offer all three, build on request.
 
 Reflect their answers back in one line and proceed. The purpose shapes the voice of the final report (warm-personal vs. professional-portfolio).
 
@@ -154,6 +155,16 @@ Make it portable and self-explaining.
 - Copy all docs + a `raw-data/` folder of source extracts in.
 - Write a top-level `README` + `00-OVERVIEW` index, and a one-line privacy note about which files are sensitive.
 
+## Phase 8.5 — Strata (optional — the signature interactive artifact)
+
+The documents are clinical; **Strata** is the showpiece — a single, beautiful, *interactive*, *offline* HTML portrait of the user's digital life (its layers and eras), built on modern data-design principles (high data-ink ratio, small multiples, compressed typographic hierarchy, a single accent, a scroll-driven reveal): big callout numbers, an interactive multi-series "shape of your years" chart, a daily-rhythm chart, ranked bars, the cross-source findings as the lead, an era-seam timeline, and story-seed cards. The data drives the design.
+
+- Run `python3 scripts/strata.py <extract_dir>` → a self-contained `strata.html`. It reads every extract present (downloads, git, installs, shell, app-usage, services, photos, `correlations.json`, `story-seeds.json`) and degrades gracefully when a source is missing.
+- **100% local and offline by construction.** Interactivity uses two small MIT libraries — **uPlot** (charts) and **Scrollama** (scroll reveal) — that are **vendored into the skill (`assets/vendor/`) and inlined into the output**, so the page is fully interactive yet opens with **no CDNs, web fonts, trackers, or network calls**. (This is why it does not pull libraries from a CDN at runtime.) JS-off still shows everything via an SVG fallback.
+- **Design controls:** `--title`/`--subtitle`, and a single restrained accent via `--accent <hex>` or `--palette <orange|green|yellow|turquoise|blue>` (match the accent to the audience; never more than one).
+- **Privacy:** the personal/inner layer is excluded by default — note-derived story seeds appear only with `--include-personal`, and **no raw note bodies are ever embedded**; photo GPS is never plotted (counts only). Treat it like the redacted edition: it's the shareable artifact.
+- See `docs/strata.md` for the design rationale.
+
 ## Phase 9 — The Handoff Pack (optional — seed the next machine)
 
 The reports are written for a human to *read*; the Handoff Pack is written for a machine to *ingest*. When the user is moving to a new computer (or just wants their context portable), turn the extracts into a small bundle that gives a fresh machine — and the AI assistant on it — instant context instead of a cold start.
@@ -187,8 +198,10 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`; photo trips/bursts when `photo-exif.csv` is present.
 - `scripts/photo_exif.py` — cross-platform photo life-map from EXIF (pure stdlib; Pillow fast-path). Dates + camera by default; `--include-location` adds GPS (off by default, cloud-sync-guarded). → `photo-exif.csv` + `photo-map.md`.
 - `assets/report-template.md` — findings-first report skeleton.
-- `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack and Story Seeds (both shipped).
-- `CHANGELOG.md` — version history (currently v3.5).
+- `scripts/strata.py` — renders the extracts into **Strata** (`strata.html`): a self-contained, interactive, offline data portrait. Vendored uPlot + Scrollama are inlined (no CDNs/network); big numbers, interactive year chart, small multiples, ranked bars, findings lead, scroll reveal. `--accent`/`--palette`, `--include-personal` (note-derived seeds only; never raw bodies).
+- `assets/vendor/` — vendored MIT libraries (uPlot, Scrollama) + their licenses, inlined by `strata.py`.
+- `docs/handoff-pack.md`, `docs/story-seeds.md`, `docs/photo-exif.md`, `docs/strata.md` — design specs (all shipped).
+- `CHANGELOG.md` — version history (currently v3.6).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

@@ -6,13 +6,14 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.5-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.6-15233a.svg)](CHANGELOG.md)
 
 A Claude Code skill that reads the years of browser history, downloads, notes, git history,
 app-usage, and photo metadata already sitting on a machine you own, and reconstructs **who you've been, how you work,
 and what mattered to you** — then turns that into things you can actually use: narrative reports,
-a portable **Handoff Pack** that seeds your next computer (and its AI) with your context, and
-journal-ready **Story Seeds** mined from your own life.
+**Strata** — a designed, interactive, offline HTML portrait of your data — a portable **Handoff
+Pack** that seeds your next computer (and its AI) with your context, and journal-ready **Story
+Seeds** mined from your own life.
 
 *Maintained by [@HighTechTorres](https://github.com/HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see [SECURITY.md](SECURITY.md).*
 
@@ -56,6 +57,10 @@ machine knows about you.
 **You'll get:**
 - 📄 **A narrative report** — your eras, work rhythm, turning points, and a portrait of how you
   operate, grounded in real numbers from *your* disk (not horoscope-speak).
+- 📊 **Strata** — a single, designed **interactive offline HTML portrait** of your digital life:
+  big callout numbers, an interactive "shape of your years" chart, small multiples, ranked bars,
+  the cross-source findings as the lead, and a scroll-reveal narrative. Built by `strata.py`;
+  the charting libraries are vendored and **inlined — no CDNs or network calls**, so it opens offline.
 - 🎒 **A Handoff Pack** — a portable bundle (`profile.json`, a drop-in `CLAUDE.md`/`ABOUT-ME.md`,
   and a re-provisioning checklist) that seeds your next machine and its AI assistant with your
   context from day one. Built by `build_handoff_pack.py`; the personal layer is excluded by
@@ -112,6 +117,7 @@ seed your next computer.
 7.6 **Longitudinal** — re-run monthly and diff over time
 7.7 **Story Seeds** *(optional)* — journal-ready story candidates mined from your own data
 8. **Package & export** — one folder, in your chosen formats (Markdown + PDF/Word as selected), with an index
+8.5 **Strata** *(optional)* — a designed, interactive, offline HTML data portrait of the whole audit
 9. **Handoff Pack** *(optional)* — a portable bundle to seed your next machine and its AI assistant
 
 ## What it produces
@@ -119,6 +125,7 @@ seed your next computer.
 | Output | Built for | What it is |
 |---|---|---|
 | **Reports** | you, to read | Findings-first narrative: eras, turning points, a portrait of how you operate |
+| **Strata** | sharing / framing | A single interactive, offline HTML data portrait: big numbers, interactive year chart, findings lead ([design](docs/strata.md)) |
 | **Handoff Pack** | your next machine | `profile.json` + `CLAUDE.md`/`ABOUT-ME.md` + a re-provisioning checklist ([design](docs/handoff-pack.md)) |
 | **Story Seeds** | your journal | Journal-ready story candidates mined from your own data ([design](docs/story-seeds.md)) |
 
@@ -138,9 +145,11 @@ digital-self-forensics/
 │   ├── render_docs.py         # Markdown → Word and/or PDF (--formats pdf,docx)
 │   ├── build_handoff_pack.py  # OS-agnostic → portable context-pack/ for a new machine
 │   ├── story_seeds.py         # OS-agnostic → journal-ready story seeds from the extracts
-│   └── photo_exif.py          # cross-platform photo life-map from EXIF (GPS opt-in)
+│   ├── photo_exif.py          # cross-platform photo life-map from EXIF (GPS opt-in)
+│   └── strata.py              # OS-agnostic → Strata: interactive, offline HTML data portrait
+├── assets/vendor/             # vendored MIT libs (uPlot, Scrollama) + licenses, inlined by strata.py
 ├── references/                # macos.md · windows.md · linux.md (artifact maps + queries)
-├── docs/                      # handoff-pack.md · story-seeds.md · photo-exif.md (design specs)
+├── docs/                      # handoff-pack.md · story-seeds.md · photo-exif.md · strata.md (design specs)
 ├── assets/report-template.md  # findings-first report skeleton
 ├── examples/sample-report.md  # synthetic sample of the output (no real data)
 ├── evals/                     # trigger-accuracy benchmark

@@ -1,5 +1,23 @@
 # Changelog — digital-self-forensics
 
+## v3.6
+The signature artifact — **Strata**, an interactive data portrait.
+- **New: `scripts/strata.py` (Phase 8.5)** — renders the extracts into **Strata**, a single,
+  self-contained, *interactive*, *offline* HTML portrait of your digital life: big callout numbers,
+  an interactive multi-series "shape of your years" chart, a daily-rhythm chart, ranked bars, the
+  cross-source findings as the lead, an era-seam timeline, story-seed cards, and a scroll-reveal
+  narrative. The data drives the design; sections appear only when their data exists.
+- **Interactivity is vendored + inlined, never fetched.** Two small MIT libraries — **uPlot**
+  (charts) and **Scrollama** (scroll reveal) — are vendored into `assets/vendor/` and inlined into
+  the output, so the page is fully interactive yet **opens offline with no CDNs, fonts, trackers, or
+  network calls**. Progressive enhancement: JS-off still shows everything (SVG fallback). ~60–80 KB.
+- **Design controls:** `--title`/`--subtitle`, single accent via `--accent <hex>` or
+  `--palette <orange|green|yellow|turquoise|blue>`.
+- **Privacy:** personal layer excluded by default — note-derived story seeds only with
+  `--include-personal`, never raw note bodies; photo GPS never plotted (counts only).
+- Docs: `docs/strata.md`. New `assets/vendor/` (uPlot, Scrollama + their MIT licenses). Interview
+  "deliverables" now offers report + Strata + Handoff Pack.
+
 ## v3.5
 Photos as a source — the richest dated record most people own.
 - **New: `scripts/photo_exif.py`** — cross-platform photo life-map from EXIF. Emits
