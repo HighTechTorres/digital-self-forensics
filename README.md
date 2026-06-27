@@ -76,7 +76,9 @@ This reads deeply personal data, so the defaults are conservative and enforced *
 
 ## Quick start
 
-**Requires:** [Claude Code](https://claude.com/claude-code) + Python 3. On macOS, grant your terminal **Full Disk Access** for the behavioral/personal layers (System Settings → Privacy & Security → Full Disk Access → add Terminal → restart it).
+**Requires:** [Claude Code](https://claude.com/claude-code) + Python 3 (no third-party packages — stdlib only).
+- **macOS:** grant your terminal **Full Disk Access** for the behavioral/personal layers (System Settings → Privacy & Security → Full Disk Access → add Terminal → restart it).
+- **Windows / Linux:** your own profile reads without special grants; a few advanced artifacts (registry hives, `journalctl`, `$MFT`) need an elevated/`sudo` prompt — the skill says so before asking. Close the browser before the run so its SQLite files aren't locked.
 
 **Install** (either way):
 ```bash
@@ -102,7 +104,7 @@ seed your next computer.
 2. **Assess** — detect OS, snapshot the machine, inventory data sources
 3. **Permissions** — walk you through Full Disk Access (macOS) / elevation notes (Win/Linux)
 4. **Persona census** — map browser profiles to life/work eras → per-era deep dives
-5. **Deep extraction** — behavior, downloads, accounts, dev/infra, installs, shell, agents (+ notes, opt-in)
+5. **Deep extraction** — native per-OS extractor: behavior, downloads, accounts, dev/infra, installs, shell, automations (+ notes/Sticky Notes, opt-in)
 6. **Super-timeline** — merge every dated event into one chronology
 6.5 **Correlate** — the headline: consume→create crossover, era seams, adoption leaps
 7. **Synthesize** — findings-first report (+ redacted business-only edition)
@@ -124,24 +126,35 @@ seed your next computer.
 
 ```
 digital-self-forensics/
-├── SKILL.md                  # orchestration + the 9-phase process
-├── CHANGELOG.md
+├── SKILL.md                   # orchestration + the 9-phase process (the skill's brain)
+├── digital-self-forensics.skill  # one-file installable bundle of everything below
 ├── scripts/
-│   ├── assess_system.sh      # system snapshot + data-source inventory (macOS/Linux)
-│   ├── macos_extract.py      # macOS deep extractor (consent flags, --source, --dry-run)
-│   ├── linux_extract.py      # Linux deep extractor (same contract + output schema)
-│   ├── windows_extract.py    # Windows deep extractor (winreg/UserAssist/Zone.Identifier)
-│   ├── correlate.py          # OS-agnostic cross-source engine → correlations.json/.md
-│   ├── diff_runs.py          # longitudinal diff + accumulating behavior history
-│   ├── render_docs.py        # Markdown → Word and/or PDF (--formats pdf,docx)
-│   ├── build_handoff_pack.py # OS-agnostic → portable context-pack/ for a new machine
-│   └── story_seeds.py        # OS-agnostic → journal-ready story seeds from the extracts
-├── references/               # macos.md · windows.md · linux.md (artifact maps + queries)
-├── docs/                     # handoff-pack.md · story-seeds.md (design specs)
-├── assets/report-template.md
-├── examples/sample-report.md # synthetic sample of the output
-└── evals/                    # trigger-accuracy benchmark
+│   ├── assess_system.sh       # system snapshot + data-source inventory (macOS/Linux)
+│   ├── macos_extract.py       # macOS deep extractor (Apple Notes inner layer)
+│   ├── linux_extract.py       # Linux deep extractor (same contract + output schema)
+│   ├── windows_extract.py     # Windows deep extractor (winreg/UserAssist/Zone.Identifier)
+│   ├── correlate.py           # OS-agnostic cross-source engine → correlations.json/.md
+│   ├── diff_runs.py           # longitudinal diff + accumulating behavior history
+│   ├── render_docs.py         # Markdown → Word and/or PDF (--formats pdf,docx)
+│   ├── build_handoff_pack.py  # OS-agnostic → portable context-pack/ for a new machine
+│   └── story_seeds.py         # OS-agnostic → journal-ready story seeds from the extracts
+├── references/                # macos.md · windows.md · linux.md (artifact maps + queries)
+├── docs/                      # handoff-pack.md · story-seeds.md (design specs + roadmap)
+├── assets/report-template.md  # findings-first report skeleton
+├── examples/sample-report.md  # synthetic sample of the output (no real data)
+├── evals/                     # trigger-accuracy benchmark
+├── .github/                   # issue + PR templates
+├── SECURITY.md                # the verifiable privacy/safety posture
+├── CONTRIBUTING.md · CODE_OF_CONDUCT.md
+├── CHANGELOG.md · LICENSE (MIT)
+└── README.md
 ```
+
+**How the pieces fit:** the per-OS `*_extract.py` scripts all write the *same* CSV/TXT schema →
+`correlate.py` finds the cross-source story → `story_seeds.py` and `build_handoff_pack.py` turn
+those extracts into the journal seeds and the portable pack → `render_docs.py` exports the chosen
+formats. Everything after extraction is **OS-agnostic**, which is why one pipeline serves all three
+platforms.
 
 ## Platform support
 
