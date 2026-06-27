@@ -170,6 +170,12 @@ def installs(R, outdir, dry):
     """Tool-adoption chronology from package managers that record install dates."""
     events = ["tool,first_seen,source"]; seen = set()
     live = os.path.abspath(R) == os.path.abspath(os.path.expanduser("~"))
+    if not live:
+        # Package logs live at the system /var/log, not under a home tree. Reading the HOST's
+        # logs during a --source (old/migrated drive) run would attribute this machine's installs
+        # to the source and corrupt the timeline. Skip explicitly instead.
+        print("  installs: skipped (package logs are live-machine only; not read under --source)")
+        return
     # dpkg log (Debian/Ubuntu) — has dates
     for logf in sorted(glob.glob("/var/log/dpkg.log*")):
         opener = open
@@ -187,22 +193,21 @@ def installs(R, outdir, dry):
             m = re.match(r'\[(\d{4}-\d{2}-\d{2})[^\]]*\].*installed (\S+)', ln)
             if m and m.group(2) not in seen:
                 seen.add(m.group(2)); events.append(f"{m.group(2)},{m.group(1)},pacman")
-    # rpm --last (Fedora/RHEL) — only on live system
-    if live:
-        for ln in run("rpm -qa --last 2>/dev/null").splitlines():
-            parts = ln.split()
-            if len(parts) >= 4:
-                name = parts[0].rsplit("-", 2)[0]
-                try:
-                    d = datetime.datetime.strptime(" ".join(parts[-4:-1]), "%a %d %b").replace(year=datetime.date.today().year)
-                except Exception: d = None
-                if name not in seen:
-                    seen.add(name); events.append(f"{name},{(d.date().isoformat() if d else '')},rpm")
-        for ln in run("flatpak list --columns=application 2>/dev/null").splitlines():
-            if ln.strip() and ln not in seen: seen.add(ln); events.append(f"{ln.strip()},,flatpak")
-        for ln in run("snap list 2>/dev/null").splitlines()[1:]:
-            t = ln.split()
-            if t and t[0] not in seen: seen.add(t[0]); events.append(f"{t[0]},,snap")
+    # rpm --last (Fedora/RHEL) — live only (guaranteed here; we return above under --source)
+    for ln in run("rpm -qa --last 2>/dev/null").splitlines():
+        parts = ln.split()
+        if len(parts) >= 4:
+            name = parts[0].rsplit("-", 2)[0]
+            try:
+                d = datetime.datetime.strptime(" ".join(parts[-4:-1]), "%a %d %b").replace(year=datetime.date.today().year)
+            except Exception: d = None
+            if name not in seen:
+                seen.add(name); events.append(f"{name},{(d.date().isoformat() if d else '')},rpm")
+    for ln in run("flatpak list --columns=application 2>/dev/null").splitlines():
+        if ln.strip() and ln not in seen: seen.add(ln); events.append(f"{ln.strip()},,flatpak")
+    for ln in run("snap list 2>/dev/null").splitlines()[1:]:
+        t = ln.split()
+        if t and t[0] not in seen: seen.add(t[0]); events.append(f"{t[0]},,snap")
     print(f"  installs: {len(events)-1} tool-adoption events")
     if not dry and len(events) > 1: w(outdir, "installs.csv", "\n".join(events))
 

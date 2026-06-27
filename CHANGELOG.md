@@ -1,5 +1,18 @@
 # Changelog — digital-self-forensics
 
+## v3.4.1
+Security/consent hardening (from code review — no behavioral change to a correctly-used run).
+- **Handoff Pack sync-root guard is now cross-platform.** `under_sync_root` matched Unix paths
+  only, so `--include-personal` could write the private layer under a Windows synced folder
+  (e.g. `C:\Users\me\OneDrive\…`). It now matches path segments case-insensitively across both
+  separators, and the sync-root list is broader (Box, Nextcloud, ownCloud, iCloudDrive, …).
+- **`--layers notes` no longer bypasses consent.** In the macOS and Windows extractors, naming a
+  personal layer via `--layers` ran it even without `--include-personal`. Personal layers are now
+  dropped (with a printed note) unless `--include-personal` is set.
+- **Linux `installs` no longer reads the host `/var/log` under `--source`.** During an
+  old/migrated-drive run it would attribute this machine's package history to the source; it now
+  skips with an explicit live-only message (matching the other live-only layers).
+
 ## v3.4
 Native Windows + Linux extractors — deep extraction is no longer Mac-only.
 - **New: `scripts/linux_extract.py`** — layers behavior (`last` session rhythm), provenance
