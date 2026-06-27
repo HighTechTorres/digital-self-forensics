@@ -6,7 +6,7 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.6-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.6.1-15233a.svg)](CHANGELOG.md)
 
 A Claude Code skill that reads the years of browser history, downloads, notes, git history,
 app-usage, and photo metadata already sitting on a machine you own, and reconstructs **who you've been, how you work,

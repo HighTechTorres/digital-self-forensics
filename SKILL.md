@@ -201,7 +201,7 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/strata.py` — renders the extracts into **Strata** (`strata.html`): a self-contained, interactive, offline data portrait. Vendored uPlot + Scrollama are inlined (no CDNs/network); big numbers, interactive year chart, small multiples, ranked bars, findings lead, scroll reveal. `--accent`/`--palette`, `--include-personal` (note-derived seeds only; never raw bodies).
 - `assets/vendor/` — vendored MIT libraries (uPlot, Scrollama) + their licenses, inlined by `strata.py`.
 - `docs/handoff-pack.md`, `docs/story-seeds.md`, `docs/photo-exif.md`, `docs/strata.md` — design specs (all shipped).
-- `CHANGELOG.md` — version history (currently v3.6).
+- `CHANGELOG.md` — version history (currently v3.6.1).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*
