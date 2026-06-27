@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security disclosure
+    url: https://github.com/HighTechTorres/digital-self-forensics/security/policy
+    about: Found a way the tool could leak or transmit data? Please read SECURITY.md and report responsibly.
+  - name: Question or idea (Discussions)
+    url: https://github.com/HighTechTorres/digital-self-forensics/discussions
+    about: For open-ended questions and ideas, start a discussion.

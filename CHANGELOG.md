@@ -1,5 +1,21 @@
 # Changelog — digital-self-forensics
 
+## v3.2
+The audit gains a *forward* use: seed your next machine.
+- **New: the Handoff Pack (Phase 9).** `scripts/build_handoff_pack.py` turns the local extracts
+  into a portable `context-pack/` — `profile.json` (structured source of truth), `PROFILE.md`, a
+  drop-in **`CLAUDE.md`** for Claude Code on the new machine, a provider-neutral **`ABOUT-ME.md`**,
+  a **`provisioning.md`** re-provisioning checklist, and a seed `README.md`. OS-agnostic (reads the
+  same extracts `correlate.py` does). The personal layer is left OUT by default so the pack is safe
+  to move; `--include-personal` adds a marked `private/` section and refuses cloud-sync roots.
+- **Interview** now asks which deliverables the user wants (report and/or Handoff Pack).
+- **Docs:** added `docs/handoff-pack.md` (shipped) and `docs/story-seeds.md` (roadmap — journal
+  mining). README reframed around the fuller vision: mirror → handoff → stories.
+- **Repo health:** added `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue/PR templates, and a
+  synthetic `examples/sample-report.md`.
+- No change to the safety posture: still local-only, read-only, consent-off-by-default, zero
+  personal data shipped.
+
 ## v3.1
 Output-format control (less file clutter, same audit).
 - **New Phase-1 interview question: output format(s).** The user picks any combination of

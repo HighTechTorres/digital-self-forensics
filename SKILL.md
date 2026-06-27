@@ -31,6 +31,7 @@ Run these phases in order, showing results and checking in between. Don't dump e
 6. **Super-timeline** — merge every dated event into one chronology; find inflection points.
 7. **Synthesis** — write the report(s), including (if permitted) the personal layer.
 8. **Package & export** — one folder, every doc in the formats the user chose (Markdown always kept; PDF/Word as selected), with an index.
+9. **Handoff Pack (optional)** — a portable bundle that seeds the user's *next* machine (and its AI assistant) with who they are and how they work.
 
 ---
 
@@ -43,6 +44,7 @@ Before touching the disk, ask the user a few questions so the output serves *the
 - **Privacy comfort** — include the sensitive layer (health/money/relationships/beliefs notes), or business/neutral only?
 - **Audience** — just them, or something they'll share? (If shareable, plan to also produce a redacted edition.)
 - **Output format(s)** — which rendered formats do they actually want? Offer **Markdown** (lightweight, editable), **PDF** (portable, shareable), **Word/.docx** (editable, for collaborators); they can pick any combination. Markdown is always kept as the working source regardless; this answer decides which *rendered* docs Phase 8 produces, so the run doesn't dump files they'll never open. **Default if they don't care: Markdown + PDF.** Record the choice and carry it to Phase 8 (`--formats`).
+- **Deliverables** — beyond the narrative report, do they also want the **Handoff Pack** (Phase 9 — a portable bundle to seed a *new* machine and its AI assistant)? Especially relevant if the trigger was "moving to a new computer" or "old laptop." Default: offer it, build on request.
 
 Reflect their answers back in one line and proceed. The purpose shapes the voice of the final report (warm-personal vs. professional-portfolio).
 
@@ -135,6 +137,15 @@ Make it portable and self-explaining.
 - Copy all docs + a `raw-data/` folder of source extracts in.
 - Write a top-level `README` + `00-OVERVIEW` index, and a one-line privacy note about which files are sensitive.
 
+## Phase 9 — The Handoff Pack (optional — seed the next machine)
+
+The reports are written for a human to *read*; the Handoff Pack is written for a machine to *ingest*. When the user is moving to a new computer (or just wants their context portable), turn the extracts into a small bundle that gives a fresh machine — and the AI assistant on it — instant context instead of a cold start.
+
+- Run `python3 scripts/build_handoff_pack.py <extract_dir>` → a `context-pack/` containing `profile.json` (structured source of truth), `PROFILE.md`, a drop-in **`CLAUDE.md`** for Claude Code on the new machine, a provider-neutral **`ABOUT-ME.md`**, a **`provisioning.md`** re-provisioning checklist (brew/apps/CLI/automations/services to re-login), and a seed `README.md`.
+- **Safe to move by default.** The personal/inner layer is left OUT even when it was extracted — a pack you carry between machines is exactly where you don't want sensitive notes embedded. Only add `--include-personal` if the user explicitly asks; it refuses to write under a cloud-sync root.
+- Tell the user how to use it: copy the folder to the new machine via a *local* transfer, drop `CLAUDE.md` where their AI tooling reads memory, and work through `provisioning.md`.
+- See `docs/handoff-pack.md` for the full design. (A companion **Story Seeds** layer — journal-ready story candidates mined from the same extracts — is specced in `docs/story-seeds.md` and on the roadmap.)
+
 ---
 
 ## Output quality bar
@@ -153,8 +164,10 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/correlate.py` — OS-agnostic cross-source engine → `correlations.json` + `.md` (crossover, era seams, adoption leaps, opt-in intentions).
 - `scripts/diff_runs.py` — longitudinal diff between two runs + accumulating `behavior-history.csv`.
 - `scripts/render_docs.py` — robust Markdown → Word and/or PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf). Takes `--formats pdf,docx` (or `--pdf` / `--docx`) to honor the Phase-1 format choice; Markdown is the always-kept source.
+- `scripts/build_handoff_pack.py` — OS-agnostic; turns the local extracts into a portable `context-pack/` (profile.json, `CLAUDE.md`/`ABOUT-ME.md`, provisioning manifest) to seed a new machine. Personal layer off by default; `--include-personal` to add a private/ section.
 - `assets/report-template.md` — findings-first report skeleton.
-- `CHANGELOG.md` — version history (currently v3.1).
+- `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack (shipped) and Story Seeds (roadmap).
+- `CHANGELOG.md` — version history (currently v3.2).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*
