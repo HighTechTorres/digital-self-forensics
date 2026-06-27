@@ -1,5 +1,23 @@
 # Changelog — digital-self-forensics
 
+## v3.4
+Native Windows + Linux extractors — deep extraction is no longer Mac-only.
+- **New: `scripts/linux_extract.py`** — layers behavior (`last` session rhythm), provenance
+  (Chrome/Firefox history + `recently-used.xbel`), accounts (Chrome Login Data + Firefox
+  logins.json), dev (git), installs (dpkg/rpm/pacman/flatpak/snap with dates), shell, recent,
+  autostart. No inner layer (no notes equivalent on Linux).
+- **New: `scripts/windows_extract.py`** (pure Python + stdlib `winreg`) — layers behavior
+  (UserAssist, the knowledgeC analog with focus time), provenance (NTFS `Zone.Identifier` ADS),
+  accounts, dev (git), installs (registry Uninstall + InstallDate), shell (PSReadLine), recent,
+  autostart (Startup + Run keys), and an **opt-in Sticky Notes inner layer**.
+- **Identical contract + output schema** to `macos_extract.py`, so correlate / Story Seeds /
+  Handoff Pack / export all work unchanged on every OS. Registry/live-only layers auto-skip under
+  `--source` (old-drive mode).
+- **Cross-platform inner layer:** downstream tools now recognize both `Apple-Notes-Full-Export.md`
+  (macOS) and `notes-export.md` (Windows Sticky Notes).
+- Same safety posture: local-only, read-only, consent off by default, cloud-sync guard on the
+  inner layer.
+
 ## v3.3
 Story Seeds — the audit's emotional counterpart to the Handoff Pack.
 - **New: Story Seeds (Phase 7.7).** `scripts/story_seeds.py` mines the local extracts for

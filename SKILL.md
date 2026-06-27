@@ -79,12 +79,18 @@ Map the user's identities and eras from their browser profiles (the highest-sign
 
 ## Phase 5 — Deep-artifact extraction (the layers bookmarks can't show)
 
-Use the bundled extractor and the OS reference. On macOS, `scripts/macos_extract.py` pulls it all. **The inner layer is OFF by default in code** — Notes bodies are written only with `--include-personal`, honoring the Phase-1 consent answer mechanically, not just in prose.
+Use the **native extractor for the detected OS** — all three share the same CLI contract, the same output-file schema, and the same consent model, so every downstream step (Phase 6.5 correlate, 7.7 Story Seeds, 9 Handoff Pack, export) works identically regardless of platform:
 
-- **First pass:** `python3 scripts/macos_extract.py <out> --dry-run` — prints the inventory + exactly what each layer would extract, writing nothing. Show this to the user.
-- **Standard run (no inner layer):** `python3 scripts/macos_extract.py <out>` → behavior, provenance, accounts, dev/infra, plus **installs** (tool-adoption chronology), **shell** (terminal tool frequency), **spotlight** (most-used docs), **agents** (LaunchAgents). The consent banner states what's on.
-- **Only if the user opted into the inner layer:** add `--include-personal`. The script refuses to write the inner layer under a cloud-sync root.
-- **Old drive / backup (cross-machine):** add `--source /Volumes/Old/Users/<name>` to read a ghost machine instead of `~` (experimental).
+- **macOS** → `scripts/macos_extract.py` (inner layer = Apple Notes)
+- **Linux** → `scripts/linux_extract.py` (no inner layer — no notes equivalent)
+- **Windows** → `python scripts/windows_extract.py` (inner layer = Sticky Notes; UserAssist is the knowledgeC analog)
+
+**The inner layer is OFF by default in code** — note bodies are written only with `--include-personal`, honoring the Phase-1 consent answer mechanically, not just in prose.
+
+- **First pass:** run the extractor with `--dry-run` — prints the inventory + exactly what each layer would extract, writing nothing. Show this to the user.
+- **Standard run (no inner layer):** run it with just `<out>` → behavior, provenance, accounts, dev/infra, installs (tool-adoption chronology), shell (terminal tool frequency), plus OS-specific extras (macOS: spotlight + agents; Linux: recent + autostart; Windows: recent + autostart). The consent banner states what's on.
+- **Only if the user opted into the inner layer:** add `--include-personal` (macOS/Windows). The script refuses to write the inner layer under a cloud-sync root.
+- **Old drive / backup (cross-machine):** add `--source <path>` (e.g. `/Volumes/Old/Users/<name>`, `/mnt/old/home/<name>`, or `D:\Users\<name>`) to read a ghost machine instead of the live home (experimental). Registry/live-only layers are skipped automatically under `--source`.
 
 What each layer yields: behavior (daily rhythm), provenance (consume→create signal), accounts (SaaS footprint, domains only — never passwords), dev/infra (git timeline, server fleet, automations), installs+shell (substrate-leap dates), notes (the inner layer, opt-in).
 
@@ -170,6 +176,8 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `references/linux.md` — Linux artifacts (shell/python history, `recently-used.xbel`, journald, `~/.config`).
 - `scripts/assess_system.sh` — cross-Unix system snapshot + OS detection + data-source inventory.
 - `scripts/macos_extract.py` — macOS deep extractor (v2): consent flags (`--include-personal` off by default, `--dry-run`, `--source`), layers behavior/provenance/accounts/dev/installs/shell/spotlight/agents/notes → CSV/MD. Run with `-h` for the full contract.
+- `scripts/linux_extract.py` — Linux deep extractor: same contract + output schema, layers behavior(`last`)/provenance(browser+xbel)/accounts/dev/installs(dpkg/rpm/pacman/flatpak/snap)/shell/recent/autostart. No inner layer (no notes equivalent).
+- `scripts/windows_extract.py` — Windows deep extractor (Python + `winreg`): same contract + output schema, layers behavior(UserAssist)/provenance(`Zone.Identifier`)/accounts/dev/installs(registry)/shell(PSReadLine)/recent/autostart/notes(Sticky Notes, opt-in). Registry/live-only layers skip under `--source`.
 - `scripts/correlate.py` — OS-agnostic cross-source engine → `correlations.json` + `.md` (crossover, era seams, adoption leaps, opt-in intentions).
 - `scripts/diff_runs.py` — longitudinal diff between two runs + accumulating `behavior-history.csv`.
 - `scripts/render_docs.py` — robust Markdown → Word and/or PDF (pandoc → textutil → LibreOffice; Chrome → wkhtmltopdf). Takes `--formats pdf,docx` (or `--pdf` / `--docx`) to honor the Phase-1 format choice; Markdown is the always-kept source.
@@ -177,7 +185,7 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`.
 - `assets/report-template.md` — findings-first report skeleton.
 - `docs/handoff-pack.md`, `docs/story-seeds.md` — design specs for the Handoff Pack and Story Seeds (both shipped).
-- `CHANGELOG.md` — version history (currently v3.3).
+- `CHANGELOG.md` — version history (currently v3.4).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

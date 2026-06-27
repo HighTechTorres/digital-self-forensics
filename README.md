@@ -6,7 +6,7 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.3-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.4-15233a.svg)](CHANGELOG.md)
 
 A Claude Code skill that reads the years of browser history, downloads, notes, git history, and
 app-usage already sitting on a machine you own, and reconstructs **who you've been, how you work,
@@ -129,6 +129,8 @@ digital-self-forensics/
 ├── scripts/
 │   ├── assess_system.sh      # system snapshot + data-source inventory (macOS/Linux)
 │   ├── macos_extract.py      # macOS deep extractor (consent flags, --source, --dry-run)
+│   ├── linux_extract.py      # Linux deep extractor (same contract + output schema)
+│   ├── windows_extract.py    # Windows deep extractor (winreg/UserAssist/Zone.Identifier)
 │   ├── correlate.py          # OS-agnostic cross-source engine → correlations.json/.md
 │   ├── diff_runs.py          # longitudinal diff + accumulating behavior history
 │   ├── render_docs.py        # Markdown → Word and/or PDF (--formats pdf,docx)
@@ -146,19 +148,22 @@ digital-self-forensics/
 | Layer | macOS | Windows | Linux |
 |---|---|---|---|
 | Assess / inventory | ✅ script | 📄 reference | ✅ script |
-| Deep extraction | ✅ `macos_extract.py` | 📄 PowerShell reference | 📄 reference |
-| Correlate / report / Handoff Pack | ✅ | ✅ | ✅ (OS-agnostic) |
+| Deep extraction | ✅ `macos_extract.py` | ✅ `windows_extract.py` | ✅ `linux_extract.py` |
+| Inner (personal) layer | ✅ Apple Notes | ✅ Sticky Notes | — (no notes equivalent) |
+| Correlate / report / Story Seeds / Handoff Pack | ✅ | ✅ | ✅ (OS-agnostic) |
 
-Native Windows/Linux extractors are on the roadmap; today non-Mac users run the deep layer from the documented commands in `references/`.
+**All three platforms now have native deep extractors** that share one CLI contract and output
+schema, so everything downstream works identically regardless of OS. `references/` still documents
+the underlying artifacts and any commands that need an elevated prompt.
 
 ## Roadmap
 
-- **Native Windows/Linux extractors** — biggest reach unlock (mirroring `macos_extract.py`).
 - **Richer sources** — photo EXIF (a life-map), calendar/email metadata, media & reading history — all opt-in (these also deepen Story Seeds).
 - **Handoff Pack v2** — dotfile capture, a review-before-run `setup.sh` generator, preference inference, an encryption option.
+- **Deeper Windows behavior** — `ActivitiesCache.db` and Prefetch (elevated) alongside UserAssist.
 - **Ask-your-own-data** — a local Q&A mode over the extracts.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) — native extractors and new sources are the most valuable contributions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) — new sources are now the most valuable contributions.
 
 ## Responsible use & safety
 

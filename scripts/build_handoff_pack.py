@@ -274,8 +274,10 @@ def main():
     open(os.path.join(out, "README.md"), "w").write(SEED_README)
 
     wrote_private = False
-    notes_path = os.path.join(d, "Apple-Notes-Full-Export.md")
-    if a.include_personal and os.path.exists(notes_path):
+    notes_path = next((os.path.join(d, f) for f in
+                       ("Apple-Notes-Full-Export.md", "notes-export.md")
+                       if os.path.exists(os.path.join(d, f))), None)
+    if a.include_personal and notes_path:
         priv = os.path.join(out, "private"); os.makedirs(priv, exist_ok=True)
         import shutil
         shutil.copy2(notes_path, os.path.join(priv, "notes-export.md"))

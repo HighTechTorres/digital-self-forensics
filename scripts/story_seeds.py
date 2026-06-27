@@ -117,10 +117,12 @@ def era_turning_points(d):
                         "high"))
     return out
 
+NOTES_FILES = ["Apple-Notes-Full-Export.md", "notes-export.md"]  # macOS Notes / Windows Sticky Notes
+
 def note_moments(d):
     """Inner layer, opt-in only. Quote the user's own note titles + dates VERBATIM; never paraphrase."""
-    path = os.path.join(d, "Apple-Notes-Full-Export.md")
-    if not os.path.exists(path): return []
+    path = next((os.path.join(d, f) for f in NOTES_FILES if os.path.exists(os.path.join(d, f))), None)
+    if not path: return []
     text = open(path, encoding="utf-8", errors="ignore").read()
     out = []
     # match "### Title\n*created YYYY-MM-DD ..."
