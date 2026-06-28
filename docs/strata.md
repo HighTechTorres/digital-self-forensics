@@ -23,7 +23,8 @@ Drawn from the established personal-data-visualization tradition and Tufte's dat
 - **Compressed typography as architecture.** Big tabular-number callouts, a monospace face for every
   data label, uppercase compressed headings.
 - **Small multiples + macro view.** Per-year series and a daily-rhythm chart so the eye compares
-  like with like; the cross-source findings are the *lead*, the era-seam timeline frames the chapters.
+  like with like. By default the cross-source findings lead and the era-seam timeline frames the
+  chapters — but the **audience lens** (below) changes what leads for several presets.
 - **Narrative reveal.** Sections animate in on scroll — a guided, in-order read rather than a wall.
 
 ## A restrained accent system

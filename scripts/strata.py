@@ -6,8 +6,9 @@ HTML page.
 
 Design language (modern data-design principles): high data-ink ratio, small multiples,
 compressed typographic hierarchy, purposeful whitespace, a single restrained accent, big tabular
-callout numbers, the cross-source findings as the lead, and a scroll-driven narrative reveal. The
-data drives the design — sections appear only when their data exists.
+callout numbers, and a scroll-driven narrative reveal. The section order and framing are set by the
+chosen audience lens (see --lens); by default the cross-source findings lead. The data drives the
+design — sections appear only when their data exists.
 
 100% LOCAL / OFFLINE BY CONSTRUCTION. Interactivity uses two small MIT-licensed libraries that are
 **vendored into this skill and inlined into the output** (assets/vendor/): uPlot (charts) and

@@ -59,10 +59,11 @@ machine knows about you.
   operate, grounded in real numbers from *your* disk (not horoscope-speak).
 - 📊 **Strata** — a single, designed **interactive offline HTML portrait** of your digital life:
   big callout numbers, an interactive "shape of your years" chart, small multiples, ranked bars,
-  the cross-source findings as the lead, and a scroll-reveal narrative. It adapts to its audience —
-  an **audience lens** reorders and frames the report around what you (or your reader) care about
-  most. Built by `strata.py`; the charting libraries are vendored and **inlined — no CDNs or
-  network calls**, so it opens offline.
+  the cross-source findings, and a scroll-reveal narrative. It adapts to its audience — an
+  **audience lens** reorders and frames the report around what you (or your reader) care about most,
+  so *what leads* changes per lens (results, the human story, how things connect, or the long arc).
+  Built by `strata.py`; the charting libraries are vendored and **inlined — no CDNs or network
+  calls**, so it opens offline.
 - 🎒 **A Handoff Pack** — a portable bundle (`profile.json`, a drop-in `CLAUDE.md`/`ABOUT-ME.md`,
   and a re-provisioning checklist) that seeds your next machine and its AI assistant with your
   context from day one. Built by `build_handoff_pack.py`; the personal layer is excluded by
