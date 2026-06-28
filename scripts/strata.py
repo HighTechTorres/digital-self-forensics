@@ -6,8 +6,9 @@ HTML page.
 
 Design language (modern data-design principles): high data-ink ratio, small multiples,
 compressed typographic hierarchy, purposeful whitespace, a single restrained accent, big tabular
-callout numbers, the cross-source findings as the lead, and a scroll-driven narrative reveal. The
-data drives the design — sections appear only when their data exists.
+callout numbers, and a scroll-driven narrative reveal. The section order and framing are set by the
+chosen audience lens (see --lens); by default the cross-source findings lead. The data drives the
+design — sections appear only when their data exists.
 
 100% LOCAL / OFFLINE BY CONSTRUCTION. Interactivity uses two small MIT-licensed libraries that are
 **vendored into this skill and inlined into the output** (assets/vendor/): uPlot (charts) and
@@ -32,6 +33,29 @@ import os, sys, csv, json, re, argparse, collections, html, datetime
 
 PALETTES = {"blue": "#2b5fa8", "orange": "#e8743b", "green": "#3aa76d",
             "yellow": "#c9a227", "turquoise": "#1aa6a6", "red": "#c0392b"}
+
+# Audience lenses — who the report is *for* shapes what it leads with, the framing copy, and the
+# accent. These are plain audience presets (no jargon in any output); the ordering choices reflect
+# what each audience's center of gravity values most: output/achievement leads with results and
+# rankings; community leads with the human story; systems leads with how the parts connect;
+# holistic leads with the long arc. "professional" is the neutral, balanced default.
+LENSES = {
+    "professional": {"accent": "blue",
+        "subtitle": "An interactive portrait of your digital life",
+        "order": ["stats", "findings", "seams", "years", "rhythm", "rankings", "seeds"]},
+    "achievement": {"accent": "orange",
+        "subtitle": "Your years in output",
+        "order": ["stats", "rankings", "years", "findings", "rhythm", "seams", "seeds"]},
+    "community": {"accent": "green",
+        "subtitle": "The story your data tells",
+        "order": ["stats", "seeds", "rhythm", "findings", "years", "rankings", "seams"]},
+    "systems": {"accent": "yellow",
+        "subtitle": "How the parts of your work connect",
+        "order": ["stats", "findings", "seams", "years", "rankings", "rhythm", "seeds"]},
+    "holistic": {"accent": "turquoise",
+        "subtitle": "The long arc of your digital life",
+        "order": ["stats", "findings", "seams", "years", "seeds", "rhythm", "rankings"]},
+}
 VENDOR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "assets", "vendor")
 
 # ---------- data loading ----------
@@ -196,14 +220,15 @@ def build(d, opts):
     all_years = sorted(set(list(dl_year) + list(repo_first_year) + list(adopt_year) + list(photo_year)))
     span = f"{all_years[0]}–{all_years[-1]}" if all_years else ""
 
-    parts = []
+    lens = opts.get("lens", "professional")
+    lensdef = LENSES.get(lens, LENSES["professional"])
+    comp = {}  # named section components; emitted later in lens order
     title = opts["title"] or "Strata"
-    subtitle = opts["subtitle"] or "An interactive portrait of your digital life"
-    parts.append(f"""<header class="masthead">
-      <div class="kicker">{esc(subtitle)}</div>
-      <h1>{esc(title)}</h1>
-      <div class="sub">{esc(span)} &nbsp;·&nbsp; built from on-disk artifacts &nbsp;·&nbsp; processed locally, nothing transmitted</div>
-    </header>""")
+    subtitle = opts["subtitle"] or lensdef["subtitle"]
+    masthead = (f'<header class="masthead"><div class="kicker">{esc(subtitle)}</div>'
+                f'<h1>{esc(title)}</h1>'
+                f'<div class="sub">{esc(span)} &nbsp;·&nbsp; built from on-disk artifacts &nbsp;·&nbsp; '
+                f'processed locally, nothing transmitted</div></header>')
 
     stats = []
     if commits_total: stats.append(stat(f"{commits_total:,}", "git commits", f"{len(git)} repositories"))
@@ -215,7 +240,7 @@ def build(d, opts):
     if autos: stats.append(stat(f"{len(autos):,}", "automations", "running for you"))
     if cameras: stats.append(stat(f"{len(cameras):,}", "cameras", "across the years"))
     if stats:
-        parts.append(f'<section class="section"><div class="stats">{"".join(stats[:8])}</div></section>')
+        comp["stats"] = f'<section class="section"><div class="stats">{"".join(stats[:8])}</div></section>'
 
     findings = corr.get("findings", [])
     if findings:
@@ -226,13 +251,13 @@ def build(d, opts):
                          + (f'<div class="so">→ {esc(so)}</div>' if so else "")
                          + (f'<div class="tag">{esc(conf)} confidence · {esc(", ".join(f.get("sources", [])))}</div>' if conf else "")
                          + '</div>')
-        parts.append(section("The cross-source story", "".join(fhtml)))
+        comp["findings"] = section("The cross-source story", "".join(fhtml))
 
     seams = corr.get("era_seams", [])
     if seams:
         chips = "".join(f'<div class="seam"><div class="seam-y">{esc(s.get("window",""))}</div>'
                         f'<div class="seam-s">{esc(", ".join(s.get("signals", [])))}</div></div>' for s in seams)
-        parts.append(section("Era seams — where the chapters turn", f'<div class="seams">{chips}</div>'))
+        comp["seams"] = section("Era seams — where the chapters turn", f'<div class="seams">{chips}</div>')
 
     # The years: interactive uPlot hero if available, else SVG small multiples
     year_series = []
@@ -250,20 +275,20 @@ def build(d, opts):
             series_defs.append({"label": lbl, "stroke": strokes[i % len(strokes)], "width": 2,
                                 "points": {"show": True, "size": 5}})
         cfg = {"data": udata, "series": series_defs, "accent": accent}
-        parts.append(section("The shape of your years",
-                             '<div id="strata-hero" class="hero"></div>'
-                             '<div class="hint">hover the chart — each line is a source, by year</div>',
-                             sid="years"))
+        comp["years"] = section("The shape of your years",
+                                '<div id="strata-hero" class="hero"></div>'
+                                '<div class="hint">hover the chart — each line is a source, by year</div>',
+                                sid="years")
         hero_js = "window.__STRATA__=" + json.dumps(cfg) + ";"
     elif year_series:
         sm = [(lbl, svg_columns(sorted(cnt.items()), accent)) for lbl, cnt in year_series]
         cards = "".join(f'<div class="mult"><div class="mult-t">{esc(t)}</div>{svg}</div>' for t, svg in sm)
-        parts.append(section("The shape of your years", f'<div class="mults">{cards}</div>', sid="years"))
+        comp["years"] = section("The shape of your years", f'<div class="mults">{cards}</div>', sid="years")
 
     # daily rhythm always SVG
     if any(v for _, v in rhythm):
-        parts.append(section("Daily rhythm — hours by time of day",
-                             f'<div class="mult wide"><div class="mult-t">Hours of activity</div>{svg_columns(rhythm, accent, height=140)}</div>'))
+        comp["rhythm"] = section("Daily rhythm — hours by time of day",
+                                 f'<div class="mult wide"><div class="mult-t">Hours of activity</div>{svg_columns(rhythm, accent, height=140)}</div>')
 
     rb = []
     if top_apps: rb.append(("Where the hours went (apps)", hbars(top_apps, accent)))
@@ -274,7 +299,7 @@ def build(d, opts):
     if code_hosts: rb.append(("Where you host code", hbars([(k, v) for k, v in code_hosts.most_common(6) if k], accent)))
     if rb:
         cards = "".join(f'<div class="rank"><div class="mult-t">{esc(t)}</div>{b}</div>' for t, b in rb)
-        parts.append(section("Rankings", f'<div class="ranks">{cards}</div>'))
+        comp["rankings"] = section("Rankings", f'<div class="ranks">{cards}</div>')
 
     seeds = seedsj.get("seeds", []) if seedsj else []
     if seeds:
@@ -283,7 +308,10 @@ def build(d, opts):
                  f'<div class="seed-t">{esc(s.get("title",""))}</div>'
                  f'<div class="seed-p">{esc(s.get("prompt",""))}</div></div>' for s in shown[:8]]
         if cards:
-            parts.append(section("Story seeds — moments worth keeping", f'<div class="seeds">{"".join(cards)}</div>'))
+            comp["seeds"] = section("Story seeds — moments worth keeping", f'<div class="seeds">{"".join(cards)}</div>')
+
+    # assemble in the lens's order (only the components that have data)
+    parts = [masthead] + [comp[k] for k in lensdef["order"] if comp.get(k)]
 
     layers = [n for n, present in [
         ("behavior", appusage), ("downloads", prov), ("git", git), ("tools", installs),
@@ -412,18 +440,23 @@ def main():
     ap.add_argument("--subtitle", default="")
     ap.add_argument("--accent", default="")
     ap.add_argument("--palette", default="", choices=list(PALETTES.keys()))
+    ap.add_argument("--lens", default="professional", choices=list(LENSES.keys()),
+                    help="Audience preset — shapes what the report leads with, its framing, and accent: "
+                         "professional (default) · achievement · community · systems · holistic.")
     ap.add_argument("--include-personal", action="store_true",
                     help="Fold in note-derived story seeds (raw note bodies are never embedded).")
     a = ap.parse_args()
     if not os.path.isdir(a.extract_dir):
         print(f"ERROR: extract dir not found: {a.extract_dir}"); sys.exit(2)
-    accent = a.accent.strip() or PALETTES.get(a.palette, PALETTES["blue"])
+    # accent precedence: explicit --accent > --palette > the lens's accent > default blue
+    lens_accent = PALETTES.get(LENSES.get(a.lens, {}).get("accent", "blue"), PALETTES["blue"])
+    accent = a.accent.strip() or (PALETTES[a.palette] if a.palette else lens_accent)
     if not re.match(r'^#[0-9a-fA-F]{3,8}$', accent):
         print(f"ERROR: --accent must be a hex color (got {accent!r})"); sys.exit(2)
 
     uplot_js = read_asset("uPlot.iife.min.js"); uplot_css = read_asset("uPlot.min.css")
     scrollama_js = read_asset("scrollama.min.js")
-    opts = {"accent": accent, "title": a.title, "subtitle": a.subtitle,
+    opts = {"accent": accent, "title": a.title, "subtitle": a.subtitle, "lens": a.lens,
             "include_personal": a.include_personal,
             "uplot_js": uplot_js, "uplot_css": uplot_css, "scrollama_js": scrollama_js,
             "have_uplot": bool(uplot_js)}
@@ -434,7 +467,7 @@ def main():
     kb = round(len(doc) / 1024, 1)
     interactive = "interactive (uPlot + scroll reveal)" if uplot_js else "static SVG (vendored libs not found)"
     print(f"Strata written to: {out}  ({kb} KB, self-contained, offline)")
-    print(f"  accent {accent} · {interactive} · personal layer {'included' if a.include_personal else 'excluded'}")
+    print(f"  lens {a.lens} · accent {accent} · {interactive} · personal layer {'included' if a.include_personal else 'excluded'}")
 
 if __name__ == "__main__":
     main()
