@@ -1,5 +1,19 @@
 # Changelog — digital-self-forensics
 
+## v3.7
+Audience lenses — Strata fits the person, not just the palette.
+- **New: `strata.py --lens <professional|achievement|community|systems|holistic>`.** The lens
+  reorders Strata's sections so the portrait *leads with what that audience values most*, sets the
+  framing copy, and selects a fitting accent: achievement → output/rankings first (orange);
+  community → story + rhythm first (green); systems → cross-source findings + era seams first
+  (yellow); holistic → the arc first (turquoise); professional → balanced default (blue).
+  `--accent`/`--palette` still override the accent.
+- **Interview now reads the audience.** Phase 1 infers the lens (and the report's voice) from the
+  user's purpose and audience and applies it by *showing*, never by labeling — the audience's way of
+  making sense of their world shapes the output's priorities, kept entirely implicit.
+- Docs: `docs/strata.md` gains an "Audience lenses" section; `SKILL.md` Phase 1 + Phase 8.5 updated.
+- No change to data, extraction, or the safety posture.
+
 ## v3.6.1
 Privacy hardening (from code review).
 - **Photo EXIF sync-root guard is now case-insensitive + segment-based.** `under_sync_root` in

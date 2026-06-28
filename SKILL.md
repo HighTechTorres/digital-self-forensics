@@ -49,6 +49,14 @@ Before touching the disk, ask the user a few questions so the output serves *the
 
 Reflect their answers back in one line and proceed. The purpose shapes the voice of the final report (warm-personal vs. professional-portfolio).
 
+**Read the audience, then match the framing.** Beyond *what* to extract, infer *how this person makes sense of their world* from their purpose, language, and audience — and let that drive what the outputs lead with, not just their color. Map it to a Strata **lens** (Phase 8.5) and the report's voice — quietly, never naming the model:
+- founder story / personal brand / résumé / "results" energy → **achievement** lens (lead with output, rankings, wins; crisp, performance framing).
+- community / wellness / relationships / something they'll share with people → **community** lens (lead with the human story and rhythm; warm, first-person).
+- understanding how they work / workflows / "how it all connects" → **systems** lens (lead with cross-source findings and era seams; analytical, multi-variable).
+- self-knowledge / meaning / the long view / curiosity → **holistic** lens (lead with the arc and turning points; reflective).
+- unsure / mixed / strictly professional → **professional** lens (balanced default).
+Pick one as the primary; people are blends, so borrow a section emphasis from a second if it fits. This is a soft inference to serve them — confirm by showing, not by interrogating.
+
 ## Phase 2 — Detect OS & assess the machine
 
 Identify the OS, then snapshot the system and inventory the data sources worth mining.
@@ -161,7 +169,8 @@ The documents are clinical; **Strata** is the showpiece — a single, beautiful,
 
 - Run `python3 scripts/strata.py <extract_dir>` → a self-contained `strata.html`. It reads every extract present (downloads, git, installs, shell, app-usage, services, photos, `correlations.json`, `story-seeds.json`) and degrades gracefully when a source is missing.
 - **100% local and offline by construction.** Interactivity uses two small MIT libraries — **uPlot** (charts) and **Scrollama** (scroll reveal) — that are **vendored into the skill (`assets/vendor/`) and inlined into the output**, so the page is fully interactive yet opens with **no CDNs, web fonts, trackers, or network calls**. (This is why it does not pull libraries from a CDN at runtime.) JS-off still shows everything via an SVG fallback.
-- **Design controls:** `--title`/`--subtitle`, and a single restrained accent via `--accent <hex>` or `--palette <orange|green|yellow|turquoise|blue>` (match the accent to the audience; never more than one).
+- **Audience lens:** `--lens <professional|achievement|community|systems|holistic>` (default `professional`) picks the audience preset chosen in Phase 1 — it reorders the sections so the report *leads with what that audience values most*, sets the framing copy, and selects a fitting accent. (achievement → output/rankings first, orange; community → story/rhythm first, green; systems → findings/era-seams first, yellow; holistic → the arc first, turquoise.) This is the main lever for fitting the portrait to the person.
+- **Design controls:** `--title`/`--subtitle`, and a single restrained accent via `--accent <hex>` or `--palette <orange|green|yellow|turquoise|blue>` overrides the lens's accent (never more than one accent).
 - **Privacy:** the personal/inner layer is excluded by default — note-derived story seeds appear only with `--include-personal`, and **no raw note bodies are ever embedded**; photo GPS is never plotted (counts only). Treat it like the redacted edition: it's the shareable artifact.
 - See `docs/strata.md` for the design rationale.
 
@@ -198,10 +207,10 @@ The reports are the product. Make them genuinely insightful: specific (cite the 
 - `scripts/story_seeds.py` — OS-agnostic; mines the extracts for journal-ready story seeds (evidence + prompt per seed; the model writes the draft) → `story-seeds.json` + `.md`. Note detector opt-in via `--include-personal`; photo trips/bursts when `photo-exif.csv` is present.
 - `scripts/photo_exif.py` — cross-platform photo life-map from EXIF (pure stdlib; Pillow fast-path). Dates + camera by default; `--include-location` adds GPS (off by default, cloud-sync-guarded). → `photo-exif.csv` + `photo-map.md`.
 - `assets/report-template.md` — findings-first report skeleton.
-- `scripts/strata.py` — renders the extracts into **Strata** (`strata.html`): a self-contained, interactive, offline data portrait. Vendored uPlot + Scrollama are inlined (no CDNs/network); big numbers, interactive year chart, small multiples, ranked bars, findings lead, scroll reveal. `--accent`/`--palette`, `--include-personal` (note-derived seeds only; never raw bodies).
+- `scripts/strata.py` — renders the extracts into **Strata** (`strata.html`): a self-contained, interactive, offline data portrait. Vendored uPlot + Scrollama are inlined (no CDNs/network); big numbers, interactive year chart, small multiples, ranked bars, findings lead, scroll reveal. `--lens <professional|achievement|community|systems|holistic>` reorders/frames for the audience; `--accent`/`--palette`, `--include-personal` (note-derived seeds only; never raw bodies).
 - `assets/vendor/` — vendored MIT libraries (uPlot, Scrollama) + their licenses, inlined by `strata.py`.
 - `docs/handoff-pack.md`, `docs/story-seeds.md`, `docs/photo-exif.md`, `docs/strata.md` — design specs (all shipped).
-- `CHANGELOG.md` — version history (currently v3.6.1).
+- `CHANGELOG.md` — version history (currently v3.7).
 
 ---
 *Maintained by Christian Torres (@HighTechTorres) · Sun Vision Digital LLC · MIT · self-audit only — see SECURITY.md.*

@@ -26,11 +26,32 @@ Drawn from the established personal-data-visualization tradition and Tufte's dat
   like with like; the cross-source findings are the *lead*, the era-seam timeline frames the chapters.
 - **Narrative reveal.** Sections animate in on scroll — a guided, in-order read rather than a wall.
 
-## A restrained accent system (Spiral-Dynamics nod)
+## A restrained accent system
 
-Named single-accent palettes let the accent match the audience's center of gravity — **one** accent
-only, never a rainbow: `orange` (achievement), `green` (community), `yellow` (systems), `turquoise`
-(holistic), `blue` (default, neutral/professional). Or pass any `--accent <hex>`.
+Named single-accent palettes let the accent match the audience — **one** accent only, never a
+rainbow: `orange` (achievement), `green` (community), `yellow` (systems), `turquoise` (holistic),
+`blue` (default, neutral/professional). Or pass any `--accent <hex>`.
+
+## Audience lenses (`--lens`)
+
+The deepest way Strata fits the person is not color but **emphasis** — *who the report is for*
+changes what it leads with, the framing copy, and the accent. `--lens` selects an audience preset
+(plain names, no jargon in any output) that reorders the sections accordingly:
+
+| Lens | Leads with | Framing · accent |
+|---|---|---|
+| `professional` (default) | balanced order | neutral · blue |
+| `achievement` | rankings + output, then the year chart | results/performance · orange |
+| `community` | story seeds + daily rhythm | warm, human story · green |
+| `systems` | cross-source findings + era seams | analytical, how-it-connects · yellow |
+| `holistic` | the arc: findings → seams → years → seeds | reflective, long view · turquoise |
+
+The ordering reflects what each audience's **center of gravity** values most (informed by
+developmental value-systems models): output-driven readers want results first; community-minded
+readers want the human story first; systems thinkers want the relationships between sources; the
+long-view reader wants the arc. The skill infers the lens during the Phase-1 interview from the
+user's purpose and audience — a soft inference applied by *showing*, never by labeling anyone.
+`--accent`/`--palette` override the lens's accent if needed.
 
 ## Interactivity — vendored, inlined, offline
 

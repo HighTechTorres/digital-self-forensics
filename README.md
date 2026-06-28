@@ -6,7 +6,7 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.6.1-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.7-15233a.svg)](CHANGELOG.md)
 
 A Claude Code skill that reads the years of browser history, downloads, notes, git history,
 app-usage, and photo metadata already sitting on a machine you own, and reconstructs **who you've been, how you work,
@@ -59,8 +59,10 @@ machine knows about you.
   operate, grounded in real numbers from *your* disk (not horoscope-speak).
 - 📊 **Strata** — a single, designed **interactive offline HTML portrait** of your digital life:
   big callout numbers, an interactive "shape of your years" chart, small multiples, ranked bars,
-  the cross-source findings as the lead, and a scroll-reveal narrative. Built by `strata.py`;
-  the charting libraries are vendored and **inlined — no CDNs or network calls**, so it opens offline.
+  the cross-source findings as the lead, and a scroll-reveal narrative. It adapts to its audience —
+  an **audience lens** reorders and frames the report around what you (or your reader) care about
+  most. Built by `strata.py`; the charting libraries are vendored and **inlined — no CDNs or
+  network calls**, so it opens offline.
 - 🎒 **A Handoff Pack** — a portable bundle (`profile.json`, a drop-in `CLAUDE.md`/`ABOUT-ME.md`,
   and a re-provisioning checklist) that seeds your next machine and its AI assistant with your
   context from day one. Built by `build_handoff_pack.py`; the personal layer is excluded by
