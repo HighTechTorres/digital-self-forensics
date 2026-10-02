@@ -44,7 +44,7 @@ def main():
     md += ["## Downloads", f"- **new sources:** {', '.join(sorted(set(nd)-set(od))[:20]) or '—'}",""]
 
     os.makedirs(os.path.dirname(os.path.abspath(new)) or '.', exist_ok=True)
-    open(os.path.join(new,"diff.md"),"w").write("\n".join(md))
+    open(os.path.join(new,"diff.md"),"w",encoding="utf-8").write("\n".join(md))
 
     # accumulate behavior history (dedupe on app+start_epoch)
     hist=os.path.join(os.path.dirname(os.path.abspath(new)) or '.',"behavior-history.csv")
@@ -55,7 +55,7 @@ def main():
             if k in seen or not r.get('app'): continue
             seen.add(k); allrows.append(r)
     if allrows:
-        with open(hist,"w",newline="") as f:
+        with open(hist,"w",newline="",encoding="utf-8") as f:
             wcsv=csv.DictWriter(f, fieldnames=["app","start_epoch","start","minutes"]); wcsv.writeheader()
             for r in allrows: wcsv.writerow({k:r.get(k,'') for k in ["app","start_epoch","start","minutes"]})
     print(f"diff_runs: wrote {new}/diff.md ; behavior-history now {len(allrows)} unique sessions")

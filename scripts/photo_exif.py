@@ -39,19 +39,7 @@ def pillow_ready():
     except Exception:
         pass  # HEIC won't open, but other Pillow formats still will
     return True
-SYNC_ROOTS = ["Dropbox", "Mobile Documents", "iCloud", "iCloudDrive", "OneDrive", "Google Drive",
-              "GoogleDrive", "pCloud", "Box", "Box Sync", "Nextcloud", "ownCloud", "Creative Cloud Files"]
-
-def under_sync_root(path):
-    # Match path segments case-insensitively across BOTH separators, and catch provider-prefixed
-    # enterprise folders ("OneDrive - Contoso") without false-matching names like "OneDriveBackup".
-    parts = [p.lower() for p in os.path.abspath(path).replace("\\", "/").split("/") if p]
-    roots = [s.lower() for s in SYNC_ROOTS]
-    for seg in parts:
-        for r in roots:
-            if seg == r or seg.startswith(r + " -"):
-                return seg
-    return None
+from _common import under_sync_root  # shared, hardened cloud-sync guard
 
 # ---------- built-in EXIF reader (no deps) ----------
 def _rat(block, off, bo, signed=False):

@@ -32,14 +32,10 @@ import os, sys, argparse, sqlite3, shutil, tempfile, re, datetime, glob, collect
 
 ALL_LAYERS = ["behavior", "provenance", "accounts", "dev", "installs", "shell", "recent", "autostart"]
 PERSONAL_LAYERS = ["notes"]
-SYNC_ROOTS = ["Dropbox", "OneDrive", "Google Drive", "GoogleDrive", "pCloud", "Box"]
+from _common import under_sync_root  # shared, hardened cloud-sync guard
 
 def env(name, default=""):
     return os.environ.get(name, default)
-
-def under_sync_root(path):
-    ap = os.path.abspath(path)
-    return next((s for s in SYNC_ROOTS if (os.sep + s) in ap or ap.endswith(s)), None)
 
 def copydb(path):
     if not os.path.exists(path): return None

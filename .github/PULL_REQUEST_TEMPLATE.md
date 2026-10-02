@@ -18,6 +18,8 @@
 - [ ] Sources remain read-only (databases copied before querying)
 - [ ] Any new personal-data access is **opt-in / off by default**
 - [ ] No real personal data committed (examples use synthetic data)
+- [ ] `python3 -m pytest -q` passes (synthetic fixtures only)
+- [ ] Bundle rebuilt: `python3 scripts/build_skill.py` (CI checks it)
 - [ ] `CHANGELOG.md` updated (and `docs/` spec if relevant)
 
 ## How I tested

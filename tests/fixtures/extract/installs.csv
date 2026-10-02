@@ -1,0 +1,12 @@
+tool,first_seen,source
+git,2018-01-04,brew
+python,2018-02-10,brew
+node,2019-05-01,brew
+docker,2021-01-15,brew
+kubectl,2021-02-02,brew
+terraform,2021-03-09,brew
+jq,2021-03-20,brew
+ripgrep,2021-04-01,brew
+n8n,2023-02-14,brew
+ollama,2023-06-01,brew
+uv,2024-01-10,brew

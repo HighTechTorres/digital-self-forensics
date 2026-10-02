@@ -1,0 +1,6 @@
+repo,commits,first,last,remote
+/Users/test/code/alpha,120,2019-03-02,2021-05-10,git@github.com:test/alpha.git
+/Users/test/code/beta,45,2021-02-11,2022-09-01,https://gitlab.com/test/beta.git
+/Users/test/code/gamma,300,2021-06-20,2024-04-15,git@github.com:test/gamma.git
+/Users/test/code/delta,12,2022-01-05,2022-02-01,
+/Users/test/code/epsilon,80,2023-07-07,2024-08-30,git@github.com:test/epsilon.git

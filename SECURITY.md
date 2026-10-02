@@ -27,8 +27,9 @@ This repo is small and readable on purpose. To check the guarantees yourself:
 
 - **Search for network calls** — there are none in the analysis path. `grep -rinE "requests|urllib|http|socket|curl|upload|post(" scripts/` returns nothing that transmits data.
 - **Check the consent default** — `scripts/macos_extract.py` excludes the inner (notes) layer unless `--include-personal` is set, and prints a consent banner before touching anything.
-- **Check the sync-guard** — the same script refuses inner-layer writes under detected cloud-sync roots.
+- **Check the sync-guard** — every script that can write a sensitive layer (Notes/Sticky Notes, photo GPS, the Handoff Pack's `private/`) uses the one guard in `scripts/_common.py` and refuses to write under detected cloud-sync roots, case-insensitively.
 - Run with `--dry-run` first: it prints exactly what it would read and write, and writes nothing.
+- **Run the test suite** — `pip install pytest && python3 -m pytest -q` checks these guarantees on synthetic data: no note text in any default output, no network loads in Strata, sync-root refusals, and dry-run writing nothing. CI runs it on Linux, macOS, and Windows. See `evals/functional-evals.md`.
 
 ## Responsible use
 

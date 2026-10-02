@@ -28,12 +28,6 @@ microseconds since 1601 ((t/1e6)-11644473600).
 import os, sys, argparse, sqlite3, shutil, tempfile, re, datetime, glob, collections, subprocess, json
 
 ALL_LAYERS = ["behavior", "provenance", "accounts", "dev", "installs", "shell", "recent", "autostart"]
-SYNC_ROOTS = ["Dropbox", "OneDrive", "Google Drive", "GoogleDrive", "pCloud", "Nextcloud", "ownCloud"]
-
-def under_sync_root(path):
-    ap = os.path.abspath(path)
-    return next((s for s in SYNC_ROOTS if f"/{s}" in ap or ap.endswith(s)), None)
-
 def copydb(path):
     if not os.path.exists(path): return None
     tmp = tempfile.mktemp(suffix=".db"); shutil.copy2(path, tmp)

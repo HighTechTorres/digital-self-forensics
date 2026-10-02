@@ -201,7 +201,7 @@ def main():
 
     out = {"schema_version": "1.0", "personal_layer_included": personal,
            "count": len(seeds), "seeds": seeds}
-    json.dump(out, open(os.path.join(d, "story-seeds.json"), "w"), indent=2)
+    json.dump(out, open(os.path.join(d, "story-seeds.json"), "w", encoding="utf-8"), indent=2)
 
     md = ["# Story Seeds — moments your disk remembers", "",
           "*Journal-ready starting points mined locally from your own data. The **evidence** is "
@@ -215,7 +215,7 @@ def main():
         md.append(f"**The evidence.** `{json.dumps(s['evidence'])}`")
         md.append("**The draft.** _(skill to write a short first-person paragraph from the evidence above)_")
         md.append(f"**A prompt.** {s['prompt']}\n")
-    open(os.path.join(d, "story-seeds.md"), "w").write("\n".join(md))
+    open(os.path.join(d, "story-seeds.md"), "w", encoding="utf-8").write("\n".join(md))
 
     by_type = collections.Counter(s["type"] for s in seeds)
     print(f"story_seeds: {len(seeds)} seeds "

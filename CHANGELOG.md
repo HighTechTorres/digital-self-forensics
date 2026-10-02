@@ -1,5 +1,43 @@
 # Changelog — digital-self-forensics
 
+## v3.8
+Harden, test, tighten — and a real Phase 6.
+- **Privacy fix: extractor sync-root guard.** `macos_extract.py` and `windows_extract.py` still used
+  the old case-sensitive substring check (fixed for photos/handoff in v3.4.1/v3.6.1, but not here).
+  As a result, `--include-personal` could write Notes / Sticky Notes under `~/dropbox/…` on
+  case-insensitive APFS or under `C:\Users\me\onedrive\…`. On Windows, `Box` also false-matched
+  `\Boxes`. Every sensitive writer now imports **one** hardened guard from the new
+  `scripts/_common.py`, which also recognizes `~/Library/CloudStorage/*`, `My Drive`, `pCloudDrive`,
+  and MEGA. A test enforces that no script keeps its own copy.
+- **New: `scripts/timeline.py` (Phase 6 super-timeline).** It merges every dated extract into
+  `timeline.csv` + `timeline.md`, covering events per year by source, the busiest months,
+  first/last activity, and the biggest year-over-year swings. Short-window sources (app-usage) are
+  kept out of the trend sections, and notes contribute dates only, and only with
+  `--include-personal`. Spec: `docs/timeline.md`.
+- **New: tests + CI.** A pytest suite runs on synthetic fixtures (`tests/fixtures/`, with
+  `CANARY-PRIVATE` markers in the notes). It covers the sync-guard table, consent defaults across
+  the whole downstream chain, Strata's offline guarantee, every lens, the Handoff Pack's safety,
+  extractor dry-run and exit codes, and `--layers notes` not bypassing consent. GitHub Actions runs
+  it on Linux, macOS, and Windows. The tests reproduce the guard bug above against v3.7.
+- **New: `scripts/build_skill.py`.** It rebuilds `digital-self-forensics.skill` reproducibly
+  (sorted entries, fixed timestamps; dev files excluded). In CI, `--check` fails a PR whose bundle
+  is stale. `.gitattributes` pins LF so Windows checkouts match.
+- **SKILL.md tightened (26 KB → 10 KB)** with progressive disclosure. The phase order, ground rules,
+  and a copy-paste **Quick start** chain stay in SKILL.md; per-phase detail (the interview lens
+  table, extractor flags and layers, the optional phases) moves to `references/workflow.md`. Stale
+  text is fixed: "v2", Story Seeds "on the roadmap", and the old "biggest gap" in CONTRIBUTING.
+- **Description:** adds photos, the offline portrait, the context pack, "carry their context to a new
+  computer", and an explicit "not for anyone else's device". Trigger evals grew to 21 cases (new
+  near-misses: a kid's laptop, an ex-employee's laptop, a Spotify export, a WWII timeline) and
+  score **21/21** (`evals/results-iteration-2.md`). New `evals/functional-evals.md` maps each
+  guarantee to its test.
+- **Strata fix:** the hero stats (the first section) stayed at `opacity:0` on load, because
+  scroll-reveal never fires "enter" for a section already above the trigger line, so the page
+  opened with a blank band until the user scrolled. Sections already in view are now revealed on
+  setup. Verified in headless Chromium with zero network requests.
+- Downstream writers (`correlate`, `story_seeds`, `build_handoff_pack`, `diff_runs`) now write UTF-8
+  explicitly, so `→`/`“”` don't crash on a Windows cp1252 default.
+
 ## v3.7
 Audience lenses — Strata fits the person, not just the palette.
 - **New: `strata.py --lens <professional|achievement|community|systems|holistic>`.** The lens

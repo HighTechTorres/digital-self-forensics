@@ -1,0 +1,5 @@
+# Keep text byte-identical across platforms so build_skill.py --check is stable everywhere.
+* text=auto eol=lf
+*.skill binary
+*.min.js -text
+*.min.css -text
