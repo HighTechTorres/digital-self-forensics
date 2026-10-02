@@ -27,11 +27,7 @@ import os, sys, argparse, sqlite3, shutil, tempfile, gzip, zlib, re, datetime, g
 EPOCH = 978307200
 ALL_LAYERS = ["behavior","provenance","accounts","dev","installs","shell","spotlight","agents"]
 PERSONAL_LAYERS = ["notes"]
-SYNC_ROOTS = ["Dropbox","Library/Mobile Documents","iCloud","OneDrive","Google Drive","GoogleDrive","pCloud","Box Sync"]
-
-def under_sync_root(path):
-    ap = os.path.abspath(path)
-    return next((s for s in SYNC_ROOTS if f"/{s}" in ap or ap.endswith(s)), None)
+from _common import under_sync_root  # shared, hardened cloud-sync guard
 
 def copydb(path):
     if not os.path.exists(path): return None

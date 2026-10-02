@@ -17,11 +17,12 @@ PRs that weaken any of these will be declined on principle, not preference.
 
 ## Ways to contribute
 
-- **Native extractors** — the biggest gap. Windows/Linux deep extractors mirroring
-  `macos_extract.py` (see `references/` for the artifact maps).
-- **New sources** — photo EXIF, calendar/email metadata, media history, etc. Each must be
-  opt-in and consent-gated.
-- **Story Seeds / Handoff Pack** — see `docs/` for the design specs.
+- **New sources** — the most valuable contributions now: calendar/email metadata, media &
+  reading history, Windows `ActivitiesCache.db`. Each must be opt-in and consent-gated, and must
+  emit dated rows that `timeline.py` can merge.
+- **Deeper outputs** — Photo v2 (HEIC/RAW out of the box, offline reverse-geocoding), Handoff
+  Pack v2 (dotfiles, review-before-run `setup.sh`). See the README roadmap and `docs/`.
+- **Tests** — more synthetic fixtures, especially per-OS extractor output.
 - **Docs, examples, and trigger evals** — improvements to clarity and coverage.
 
 ## Development
@@ -29,8 +30,14 @@ PRs that weaken any of these will be declined on principle, not preference.
 1. Fork and branch from `main`.
 2. Keep scripts dependency-light — they auto-detect tools and degrade gracefully (see
    `render_docs.py` for the pattern). Standard library first.
-3. Test against **synthetic** extract data, never your real personal data in commits.
-4. Update `CHANGELOG.md` and the relevant `docs/` spec.
+3. Test against **synthetic** extract data, never your real personal data in commits. Fixtures
+   live in `tests/fixtures/`; the notes fixture carries `CANARY-PRIVATE` markers so tests can prove
+   the inner layer never leaks.
+4. Run the suite: `pip install pytest && python3 -m pytest -q`.
+5. Any script that writes a sensitive layer must use `under_sync_root` from `scripts/_common.py`
+   (a test enforces this) — never a local copy.
+6. Rebuild the bundle: `python3 scripts/build_skill.py` (CI runs `--check` and fails if it's stale).
+7. Update `CHANGELOG.md` and the relevant `docs/` spec.
 
 ## Opening a PR
 

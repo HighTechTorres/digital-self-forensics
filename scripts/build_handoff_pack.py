@@ -31,20 +31,7 @@ Outputs (in EXTRACT_DIR/context-pack/ unless --out is given):
 """
 import os, sys, csv, json, re, argparse, collections, datetime
 
-SYNC_ROOTS = ["Dropbox", "Mobile Documents", "iCloud", "iCloudDrive", "OneDrive", "Google Drive",
-              "GoogleDrive", "pCloud", "Box", "Box Sync", "Nextcloud", "ownCloud", "Creative Cloud Files"]
-
-def under_sync_root(path):
-    # Match case-insensitively against BOTH separators so Windows paths like
-    # C:\Users\me\OneDrive\context-pack are caught, not just Unix ones. Also catch
-    # provider-prefixed enterprise folders like "OneDrive - Contoso" (seg starts with "root -").
-    parts = [p.lower() for p in os.path.abspath(path).replace("\\", "/").split("/") if p]
-    roots = [s.lower() for s in SYNC_ROOTS]
-    for seg in parts:
-        for r in roots:
-            if seg == r or seg.startswith(r + " -"):
-                return seg
-    return None
+from _common import under_sync_root  # shared, hardened cloud-sync guard
 
 def read_csv(path):
     if not os.path.exists(path): return []
@@ -274,12 +261,12 @@ def main():
     if a.name: p["name"] = a.name
     p["personal_layer_included"] = bool(a.include_personal)
 
-    json.dump(p, open(os.path.join(out, "profile.json"), "w"), indent=2)
-    open(os.path.join(out, "PROFILE.md"), "w").write(md_profile(p))
-    open(os.path.join(out, "CLAUDE.md"), "w").write(md_claude(p))
-    open(os.path.join(out, "ABOUT-ME.md"), "w").write(md_about(p))
-    open(os.path.join(out, "provisioning.md"), "w").write(md_provisioning(p))
-    open(os.path.join(out, "README.md"), "w").write(SEED_README)
+    json.dump(p, open(os.path.join(out, "profile.json"), "w", encoding="utf-8"), indent=2)
+    open(os.path.join(out, "PROFILE.md"), "w", encoding="utf-8").write(md_profile(p))
+    open(os.path.join(out, "CLAUDE.md"), "w", encoding="utf-8").write(md_claude(p))
+    open(os.path.join(out, "ABOUT-ME.md"), "w", encoding="utf-8").write(md_about(p))
+    open(os.path.join(out, "provisioning.md"), "w", encoding="utf-8").write(md_provisioning(p))
+    open(os.path.join(out, "README.md"), "w", encoding="utf-8").write(SEED_README)
 
     wrote_private = False
     notes_path = next((os.path.join(d, f) for f in
@@ -289,7 +276,7 @@ def main():
         priv = os.path.join(out, "private"); os.makedirs(priv, exist_ok=True)
         import shutil
         shutil.copy2(notes_path, os.path.join(priv, "notes-export.md"))
-        open(os.path.join(priv, "README.md"), "w").write(
+        open(os.path.join(priv, "README.md"), "w", encoding="utf-8").write(
             "# Private layer\n\nThis folder contains note-derived context. Keep it OFF shared or "
             "synced drives. It is never auto-shared and was only written because you passed "
             "--include-personal.\n")

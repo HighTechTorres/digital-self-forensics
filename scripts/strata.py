@@ -400,6 +400,12 @@ INIT_JS = """
     if(typeof scrollama!=='undefined'){
       var sc=scrollama();
       sc.setup({step:'.section',offset:0.85,once:true}).onStepEnter(function(r){r.element.classList.add('in');});
+      // Sections already above the trigger line on load (the hero stats, or a mid-page reload) never
+      // get an "enter" event — reveal them now so nothing in view starts invisible.
+      var line=window.innerHeight*0.85;
+      document.querySelectorAll('.section').forEach(function(el){
+        if(el.getBoundingClientRect().top<line) el.classList.add('in');
+      });
       document.body.classList.add('js');  // only hide-then-reveal AFTER setup succeeds
       window.addEventListener('resize',function(){sc.resize();});
     }

@@ -114,7 +114,7 @@ def main():
     out={"schema_version":"1.0","personal_layer_included":personal,
          "generated_from":[f for f in ["download-provenance.csv","git-timeline.csv","installs.csv","shell-tools.csv"] if os.path.exists(os.path.join(d,f))],
          "findings":findings,"era_seams":era_seams,"intention_gaps":intention_gaps}
-    json.dump(out, open(os.path.join(d,"correlations.json"),"w"), indent=2)
+    json.dump(out, open(os.path.join(d,"correlations.json"),"w",encoding="utf-8"), indent=2)
 
     # markdown
     md=["# Correlations — what's *between* your sources","",
@@ -131,7 +131,7 @@ def main():
     if personal:
         md.append("\n## Stated intentions (from your notes — for YOU to judge, not auto-rated)")
         md += [f"- “{g['stated_intention_quote']}” → _{g['verdict']}_" for g in intention_gaps] or ["*(none found)*"]
-    open(os.path.join(d,"correlations.md"),"w").write("\n".join(md))
+    open(os.path.join(d,"correlations.md"),"w",encoding="utf-8").write("\n".join(md))
     print(f"correlate: {len(findings)} findings, {len(era_seams)} era seams, {len(intention_gaps)} intentions "
           f"(personal={'on' if personal else 'off'}) -> correlations.json + correlations.md")
 

@@ -11,6 +11,7 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
+.pytest_cache/
 
 # Audit OUTPUT — never commit anyone's extracted data
 raw-data/
@@ -19,6 +20,14 @@ run-*/
 behavior-history.csv
 correlations.json
 correlations.md
+timeline.csv
+timeline.md
+story-seeds.json
+story-seeds.md
+strata.html
+context-pack/
 blind-spots.md
 *.docx
 *.pdf
+# …but design docs share some of those names
+!docs/*.md

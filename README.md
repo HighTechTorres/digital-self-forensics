@@ -6,7 +6,8 @@
 [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-5b9bd5.svg)](https://claude.com/claude-code)
 [![Local only](https://img.shields.io/badge/data-100%25%20local-2ea44f.svg)](SECURITY.md)
 [![Platform](https://img.shields.io/badge/macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-supported-444.svg)](#platform-support)
-[![Version](https://img.shields.io/badge/version-3.7-15233a.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.8-15233a.svg)](CHANGELOG.md)
+[![CI](https://github.com/HighTechTorres/digital-self-forensics/actions/workflows/ci.yml/badge.svg)](.github/workflows/ci.yml)
 
 A Claude Code skill that reads the years of browser history, downloads, notes, git history,
 app-usage, and photo metadata already sitting on a machine you own, and reconstructs **who you've been, how you work,
@@ -113,7 +114,7 @@ seed your next computer.
 3. **Permissions** — walk you through Full Disk Access (macOS) / elevation notes (Win/Linux)
 4. **Persona census** — map browser profiles to life/work eras → per-era deep dives
 5. **Deep extraction** — native per-OS extractor: behavior, downloads, accounts, dev/infra, installs, shell, automations (+ notes/Sticky Notes, opt-in) · **optional photo EXIF life-map** (dates + camera; GPS opt-in)
-6. **Super-timeline** — merge every dated event into one chronology
+6. **Super-timeline** — `timeline.py` merges every dated event into one chronology + inflection points
 6.5 **Correlate** — the headline: consume→create crossover, era seams, adoption leaps
 7. **Synthesize** — findings-first report (+ redacted business-only edition)
 7.5 **Adversarial review** — a fresh-context agent challenges the portrait (local only)
@@ -136,27 +137,31 @@ seed your next computer.
 
 ```
 digital-self-forensics/
-├── SKILL.md                   # orchestration + the 9-phase process (the skill's brain)
+├── SKILL.md                   # orchestration + the phase order (the skill's brain; lean by design)
 ├── digital-self-forensics.skill  # one-file installable bundle of everything below
 ├── scripts/
 │   ├── assess_system.sh       # system snapshot + data-source inventory (macOS/Linux)
 │   ├── macos_extract.py       # macOS deep extractor (Apple Notes inner layer)
 │   ├── linux_extract.py       # Linux deep extractor (same contract + output schema)
 │   ├── windows_extract.py     # Windows deep extractor (winreg/UserAssist/Zone.Identifier)
+│   ├── timeline.py            # OS-agnostic super-timeline → timeline.csv/.md (Phase 6)
 │   ├── correlate.py           # OS-agnostic cross-source engine → correlations.json/.md
 │   ├── diff_runs.py           # longitudinal diff + accumulating behavior history
 │   ├── render_docs.py         # Markdown → Word and/or PDF (--formats pdf,docx)
 │   ├── build_handoff_pack.py  # OS-agnostic → portable context-pack/ for a new machine
 │   ├── story_seeds.py         # OS-agnostic → journal-ready story seeds from the extracts
 │   ├── photo_exif.py          # cross-platform photo life-map from EXIF (GPS opt-in)
-│   └── strata.py              # OS-agnostic → Strata: interactive, offline HTML data portrait
+│   ├── strata.py              # OS-agnostic → Strata: interactive, offline HTML data portrait
+│   ├── _common.py             # shared helpers, incl. the hardened cloud-sync guard
+│   └── build_skill.py         # dev: rebuilds the .skill bundle reproducibly (--check in CI)
 ├── assets/vendor/             # vendored MIT libs (uPlot, Scrollama) + licenses, inlined by strata.py
-├── references/                # macos.md · windows.md · linux.md (artifact maps + queries)
-├── docs/                      # handoff-pack.md · story-seeds.md · photo-exif.md · strata.md (design specs)
+├── references/                # workflow.md (per-phase detail) · macos.md · windows.md · linux.md
+├── docs/                      # timeline · handoff-pack · story-seeds · photo-exif · strata (design specs)
 ├── assets/report-template.md  # findings-first report skeleton
 ├── examples/sample-report.md  # synthetic sample of the output (no real data)
-├── evals/                     # trigger-accuracy benchmark
-├── .github/                   # issue + PR templates
+├── evals/                     # trigger-accuracy benchmark + functional (consent/offline) evals
+├── tests/                     # pytest suite on synthetic fixtures (privacy, pipeline, CLI contract)
+├── .github/                   # CI (Linux/macOS/Windows) + issue + PR templates
 ├── SECURITY.md                # the verifiable privacy/safety posture
 ├── CONTRIBUTING.md · CODE_OF_CONDUCT.md
 ├── CHANGELOG.md · LICENSE (MIT)
@@ -164,10 +169,15 @@ digital-self-forensics/
 ```
 
 **How the pieces fit:** the per-OS `*_extract.py` scripts all write the *same* CSV/TXT schema →
-`correlate.py` finds the cross-source story → `story_seeds.py` and `build_handoff_pack.py` turn
+`timeline.py` builds the chronology → `correlate.py` finds the cross-source story → `story_seeds.py` and `build_handoff_pack.py` turn
 those extracts into the journal seeds and the portable pack → `render_docs.py` exports the chosen
 formats. Everything after extraction is **OS-agnostic**, which is why one pipeline serves all three
 platforms.
+
+**Verify the guarantees yourself:** `pip install pytest && python3 -m pytest -q` runs the suite on
+synthetic data. It checks that no output leaks note text without `--include-personal`, that Strata
+loads nothing from the network, that every sensitive writer refuses cloud-sync folders, and that
+`--dry-run` writes nothing. CI runs it on Linux, macOS, and Windows on every PR.
 
 ## Platform support
 
